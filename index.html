@@ -162,7 +162,7 @@
 
 <script>
     // URL tvoje Google Script aplikacije
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxSnwiRD6yO2KKRQzCxFOl5vSqPcWQK20D-5Vrkk8Avbvm4w6DL4-OBdPnt8ktO2yT8wQ/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzdSTU1Pa9v1WoAsyJ7tjreRgzKAH033EiMXza7Zf5cVydXCWyEiS76ZS9zz-wJ48_-KQ/exec';
 
     let adminModus = false; // Ovo pamti da li si ulogovan
 
@@ -1113,47 +1113,7 @@ function sacuvajMarketing() {
     location.reload();
 }
 
-// Logika za brojanje (Ovo ide na dno script taga ili kod inicijalizacije)
-async function azurirajBrojac() {
-    // 1. Šaljemo signal Google Tabeli da doda +1 (samo ako nije Admin)
-    if (!adminModus) {
-        try {
-            fetch(scriptURL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify({ akcija: "brojac" })
-            });
-        } catch (e) {
-            console.log("Greška kod brojača");
-        }
-    }
 
-    // 2. Povlačenje ukupnog broja iz Tabele da bi ga vidio u Panelu
-    // Ovo se aktivira samo ako si u Admin panelu da ne trošimo resurse bezveze
-    const prikaz = document.getElementById('brojPosjetaPrikaz');
-    if (prikaz && adminModus) {
-        try {
-            // Povlačimo podatke sa servera (istu onu listu gdje su narudžbine)
-            const res = await fetch(scriptURL);
-            const podaci = await res.json();
-            
-            // Ako tvoj API vraća i broj posjeta, ovdje ćemo ga upisati
-            // Za prvu ruku, dok ne sredimo GET metodu u skripti, 
-            // ovdje može ostati i lokalni broj kao rezerva:
-            let lokalnePosjete = localStorage.getItem('tjd_ukupno_posjeta') || 0;
-            prikaz.innerText = lokalnePosjete; 
-        } catch (e) {
-            prikaz.innerText = "Greška";
-        }
-    }
-}
-
-// Pozivamo funkciju čim se sajt učita
-window.onload = function() {
-    // Prvo provjeri da li je admin bio ulogovan (iz session-a ako treba)
-    azurirajBrojac();
-    // Ako već imaš renderujIstoriju(), pozovi je i nju ovdje
-};
 
     
 function otvoriPolitiku() {
