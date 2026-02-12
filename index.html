@@ -62,10 +62,7 @@
 
 <header>
     
-<div style="background:white; padding:10px; border-radius:10px; margin-bottom:15px; border:1px solid #f1c40f; text-align:center;">
-    <span style="font-size:0.9rem; color:var(--siva);">UKUPNO POSJETA SAJTU:</span><br>
-    <strong style="font-size:1.5rem; color:var(--tamna);" id="brojPosjetaPrikaz">...</strong>
-</div>
+
 	<div class="logo" onclick="aktivirajAdmina()">
         <h1>TJD COMPANY DOO</h1>
     </div>
@@ -1164,6 +1161,16 @@ window.onclick = function(event) {
     if (event.target == modalPolitika) { modalPolitika.style.display = 'none'; }
 }
 
+
+function prikaziSekciju(tip) {
+    // ... tvoj kod koji crta HTML ...
+    sadrzaj.innerHTML = `... tvoj kod sa ID-em brojPosjetaPrikaz ...`;
+
+    // SADA GA POZOVI OVDE:
+    if(tip === 'individualni') {
+        azurirajBrojac(); 
+    }
+}
 
 // Čim se završi učitavanje stranice, pokreni brojač
 window.onload = function() {
