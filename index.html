@@ -61,9 +61,7 @@
 <body>
 
 <header>
-    
-
-	<div class="logo" onclick="aktivirajAdmina()">
+    <div class="logo" onclick="aktivirajAdmina()">
         <h1>TJD COMPANY DOO</h1>
     </div>
 </header>
@@ -102,6 +100,7 @@
         <p>📍 Sjedište: Mojkovac, Crna Gora</p>
         <p>📞 Telefon: +382 68 812 077</p>
         <p>📧 Email: tjd.dostava@gmail.com</p>
+        <span id="brojPosjetaPrikaz">...</span>
         
         
     </div>
@@ -164,7 +163,7 @@
 
 <script>
     // URL tvoje Google Script aplikacije
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbztDovoFn7co-tQULIy3C838OsBiBA3Oq_bdtNk5T0hHxpSpM_5LKHSB7YIcph5vNmrFw/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzNkmZf7wQlJKEgg48dtgWD4Mas1FLLdnBdOLdywU4xTZ1I00fFh8TZIAWo2zUps-EHOw/exec';
 
     let adminModus = false; // Ovo pamti da li si ulogovan
 
@@ -190,11 +189,6 @@
                     <span>400km+: <input type="number" id="disc3" value="${s3}" style="width:45px;">%</span>
                     <button onclick="sacuvajPopuste()" style="background:var(--primarna); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">SAČUVAJ</button>
                 </div>
-
-// ODMAH ISPOD DODAJ OVO:
-        if(tip === 'individualni') {
-            azurirajBrojac(); // Forsiraj ispis broja čim se sekcija nacrta
-        }
         
 // Dodaj ovo unutar adminOkvir-a
 <div style="margin-top:15px; padding-top:10px; border-top:1px solid #ddd;">
@@ -730,7 +724,7 @@
             body: JSON.stringify(podaci) 
         });
         
-        alert(`Vaš zahtjev je uspješno evidentiran pod brojem ${tjdID}. Ubrzo ćete biti kontaktirani od strane našeg tima radi potvrde termina i dostavljanja zvanične ponude.`);
+        alert(`Vaš zahtjev je uspješno evidentiran pod brojem ${tjdID}. Datumi i ruta su usklađeni sa bazom.`);
         location.reload(); 
     } catch (e) {
         alert("Greška pri konekciji. Molimo pokušajte ponovo.");
@@ -1141,9 +1135,6 @@ async function azurirajBrojac() {
         if (prikaz) prikaz.innerText = "N/A";
     }
 }
-
-
-
     
 function otvoriPolitiku() {
     document.getElementById('politikaModal').style.display = 'block';
@@ -1161,16 +1152,6 @@ window.onclick = function(event) {
     if (event.target == modalPolitika) { modalPolitika.style.display = 'none'; }
 }
 
-
-function prikaziSekciju(tip) {
-    // ... tvoj kod koji crta HTML ...
-    sadrzaj.innerHTML = `... tvoj kod sa ID-em brojPosjetaPrikaz ...`;
-
-    // SADA GA POZOVI OVDE:
-    if(tip === 'individualni') {
-        azurirajBrojac(); 
-    }
-}
 
 // Čim se završi učitavanje stranice, pokreni brojač
 window.onload = function() {
