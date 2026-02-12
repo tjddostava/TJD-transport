@@ -60,10 +60,6 @@
 </head>
 <body>
 
-
-Broj posjeta: <span id="brojPosjetaPrikaz">0</span>
-
-
 <header>
     <div class="logo" onclick="aktivirajAdmina()">
         <h1>TJD COMPANY DOO</h1>
@@ -166,7 +162,7 @@ Broj posjeta: <span id="brojPosjetaPrikaz">0</span>
 
 <script>
     // URL tvoje Google Script aplikacije
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxAe6ZvS60wlhm4pJoWKUtXIvwM9lJRLrrUZ0KH7aRm4uXXYOynKhYc27AO2peE2fBMmg/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz6LpIlCMYgJD0le-JJdOeNPf7mSMMFRuF_NQ92s5CdRjyjuBRsx_L5SFxwGUqoyjrPpA/exec';
 
     let adminModus = false; // Ovo pamti da li si ulogovan
 
@@ -1118,40 +1114,6 @@ function sacuvajMarketing() {
 }
 
 
-const scriptURL = "OVDJE_STAVI_SVOJ_WEB_APP_LINK";
-
-async function azurirajBrojac() {
-    if (sessionStorage.getItem('posjeta_snimljena')) {
-        dohvatiBroj();
-        return;
-    }
-
-    try {
-        await fetch(scriptURL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify({ akcija: "posjeta" })
-        });
-
-        sessionStorage.setItem('posjeta_snimljena', 'true');
-        dohvatiBroj();
-
-    } catch (err) {
-        console.log("Greška:", err);
-    }
-}
-
-async function dohvatiBroj() {
-    try {
-        const res = await fetch(scriptURL);
-        const broj = await res.text();
-        document.getElementById("brojPosjetaPrikaz").innerText = broj;
-    } catch (err) {
-        console.log("Greška pri čitanju.");
-    }
-}
-
-window.onload = azurirajBrojac;
 
     
 function otvoriPolitiku() {
