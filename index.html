@@ -162,7 +162,7 @@
 
 <script>
     // URL tvoje Google Script aplikacije
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbz6LpIlCMYgJD0le-JJdOeNPf7mSMMFRuF_NQ92s5CdRjyjuBRsx_L5SFxwGUqoyjrPpA/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbztDovoFn7co-tQULIy3C838OsBiBA3Oq_bdtNk5T0hHxpSpM_5LKHSB7YIcph5vNmrFw/exec';
 
     let adminModus = false; // Ovo pamti da li si ulogovan
 
@@ -723,7 +723,7 @@
             body: JSON.stringify(podaci) 
         });
         
-        alert(`Vaš zahtjev je uspješno evidentiran pod brojem ${tjdID}. Datumi i ruta su usklađeni sa bazom.`);
+        alert(`Vaš zahtjev je uspješno evidentiran pod brojem ${tjdID}. Ubrzo ćete biti kontaktirani od strane našeg tima radi potvrde termina i dostavljanja zvanične ponude.`);
         location.reload(); 
     } catch (e) {
         alert("Greška pri konekciji. Molimo pokušajte ponovo.");
@@ -1114,6 +1114,28 @@ function sacuvajMarketing() {
 }
 
 
+async function azurirajBrojac() {
+    // 1. Pronađi element na ekranu gdje piše broj
+    const prikaz = document.getElementById('brojPosjetaPrikaz');
+    
+    try {
+        // 2. "Gađaj" Google skriptu (doGet funkciju)
+        const res = await fetch(scriptURL);
+        const data = await res.json();
+        
+        // 3. Ako je Google vratio broj, upiši ga umjesto onih tačkica "..."
+        if (data && data.ukupno !== undefined) {
+            if (prikaz) {
+                prikaz.innerText = data.ukupno;
+            }
+        }
+    } catch (e) {
+        console.error("Greška sa brojačem:", e);
+        if (prikaz) prikaz.innerText = "N/A";
+    }
+}
+
+
 
     
 function otvoriPolitiku() {
@@ -1132,6 +1154,11 @@ window.onclick = function(event) {
     if (event.target == modalPolitika) { modalPolitika.style.display = 'none'; }
 }
 
+
+// Čim se završi učitavanje stranice, pokreni brojač
+window.onload = function() {
+    azurirajBrojac();
+};
     
 </script>
 </body>
