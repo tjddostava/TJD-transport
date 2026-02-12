@@ -61,7 +61,15 @@
 <body>
 
 <header>
-    <div class="logo" onclick="aktivirajAdmina()">
+    
+<div style="margin-top:15px; padding-top:10px; border-top:1px solid #ddd;">
+    <strong>📢 MARKETING (AKCIJA)</strong><br>
+    <input type="text" id="akcijaTekst" placeholder="Npr. AKCIJA DO KRAJA MJESECA!" style="width:70%; padding:5px; margin-top:5px;">
+    <label><input type="checkbox" id="akcijaAktivna"> Prikaži</label>
+    <button onclick="sacuvajMarketing()" style="background:var(--sekundarna); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; margin-left:10px;">OSVJEŽI</button>
+</div>
+
+	<div class="logo" onclick="aktivirajAdmina()">
         <h1>TJD COMPANY DOO</h1>
     </div>
 </header>
