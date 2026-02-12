@@ -162,7 +162,7 @@
 
 <script>
     // URL tvoje Google Script aplikacije
-    const scriptURL = 'https://script.google.com/macros/s/AKfycby8YQb40hBYnWqZjMh_VGqV6QM3zdVng9C52L4HN_T4hSR5o_RUPDkJF_wtvhktIfxA3g/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyeoxuaaHwO3MzAqN2LPbfi_VKGSj8CiulzGddKwbj5t0LYIOjE6qD2sz2EiB-Hs4IGhg/exec';
 
     let adminModus = false; // Ovo pamti da li si ulogovan
 
@@ -1117,33 +1117,39 @@ function sacuvajMarketing() {
 async function azurirajBrojac() {
     const prikaz = document.getElementById('brojPosjetaPrikaz');
     
-    // Sprečava brojanje pri svakom osvježavanju stranice (F5)
+    // Provjera da ne broji refresh u istoj sesiji
     if (sessionStorage.getItem('tjd_posjeta_snimljena')) {
-        // Čak i ako je snimljeno, pokušaj povući broj da se prikaže
-        fetch(scriptURL, {
-            method: 'POST',
-            body: JSON.stringify({ akcija: "posjeta" })
-        }).then(res => res.text()).then(broj => {
-            if (prikaz) prikaz.innerText = broj;
-        });
+        dohvatiSamoBroj(); // Samo pročitaj ako je već izbrojano
         return;
     }
 
     try {
-        const response = await fetch(scriptURL, {
+        await fetch(scriptURL, {
             method: 'POST',
-            body: JSON.stringify({ akcija: "posjeta" })
+            mode: 'no-cors', // Jako bitno za GitHub -> Google vezu
+            headers: { 'Content-Type': 'text/plain' }, // Šaljemo kao plain tekst da izbjegnemo CORS
+            body: JSON.stringify({ "akcija": "posjeta" })
         });
         
-        const ukupno = await response.text();
+        sessionStorage.setItem('tjd_posjeta_snimljena', 'true');
         
-        if (prikaz && !isNaN(ukupno)) {
-            prikaz.innerText = ukupno;
-            sessionStorage.setItem('tjd_posjeta_snimljena', 'true');
-        }
+        // Sačekaj sekundu da Google upiše, pa povuci broj
+        setTimeout(dohvatiSamoBroj, 1500);
+        
     } catch (e) {
-        console.log("Brojač trenutno nedostupan.");
+        console.log("Greška kod slanja.");
     }
+}
+
+async function dohvatiSamoBroj() {
+    const prikaz = document.getElementById('brojPosjetaPrikaz');
+    try {
+        const res = await fetch(scriptURL + "?getBroj=true");
+        const broj = await res.text();
+        if (prikaz && !isNaN(broj)) {
+            prikaz.innerText = broj;
+        }
+    } catch (e) { }
 }
     
 function otvoriPolitiku() {
