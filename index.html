@@ -1117,33 +1117,32 @@ function sacuvajMarketing() {
 async function azurirajBrojac() {
     const prikaz = document.getElementById('brojPosjetaPrikaz');
     
-    // Nemoj brojati admina i nemoj brojati više puta u istoj sesiji (refresh)
-    if (adminModus || sessionStorage.getItem('tjd_posjeta_snimljena')) {
-        // Samo povuci broj ako si admin da vidiš stanje
-        if (adminModus) {
-             // Ovdje možeš dodati fetch da samo pročitaš broj bez uvećavanja
-        }
+    // Sprečava brojanje pri svakom osvježavanju stranice (F5)
+    if (sessionStorage.getItem('tjd_posjeta_snimljena')) {
+        // Čak i ako je snimljeno, pokušaj povući broj da se prikaže
+        fetch(scriptURL, {
+            method: 'POST',
+            body: JSON.stringify({ akcija: "posjeta" })
+        }).then(res => res.text()).then(broj => {
+            if (prikaz) prikaz.innerText = broj;
+        });
         return;
     }
 
     try {
         const response = await fetch(scriptURL, {
             method: 'POST',
-            // Ne koristimo no-cors ovdje ako želimo da dobijemo broj nazad
             body: JSON.stringify({ akcija: "posjeta" })
         });
         
         const ukupno = await response.text();
         
-        if (prikaz && ukupno) {
+        if (prikaz && !isNaN(ukupno)) {
             prikaz.innerText = ukupno;
+            sessionStorage.setItem('tjd_posjeta_snimljena', 'true');
         }
-        
-        // Zabilježi da je posjeta uračunata za ovog korisnika
-        sessionStorage.setItem('tjd_posjeta_snimljena', 'true');
-        
     } catch (e) {
-        console.log("Greška sa brojačem.");
+        console.log("Brojač trenutno nedostupan.");
     }
 }
     
