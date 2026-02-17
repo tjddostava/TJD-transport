@@ -244,38 +244,81 @@
         const smjerA = localStorage.getItem('tjd_zbirni_smjer_a') || "SJEVER ➔ PG";
         const smjerB = localStorage.getItem('tjd_zbirni_smjer_b') || "PG ➔ SJEVER";
 
+const statusA = localStorage.getItem('tjd_status_a') !== 'false';
+    const statusB = localStorage.getItem('tjd_status_b') !== 'false';
+
         // Pretvaramo tvoj tekstualni opis rute u listu gradova za klijenta
         const listaGradova = nazivRute.split(',').map(g => g.trim());
 
         sadrzaj.innerHTML = `
-            <div id="adminOkvirZbirni" style="display:${adminModus ? 'block' : 'none'}; background:#fef9e7; padding:15px; border-radius:15px; border:1px dashed #f1c40f; margin-bottom:20px;">
-                <strong style="font-size:0.8rem;">⚙️ ADMIN: PODEŠAVANJE RUTE</strong>
-                <div style="margin-top:10px; display:grid; grid-template-columns: 1fr; gap:8px;">
-                    <div>
-                        <label style="font-size:0.7rem;">GRADOVI NA RUTI (odvojite zarezom):</label>
-                        <input type="text" id="admZbirniNaziv" value="${nazivRute}" style="width:100%; padding:5px;">
-                        <small style="font-size:0.6rem; color:#666;">*Sajt će sam napraviti listu gradova od ovoga.</small>
+        <div id="adminOkvirZbirni" style="display:${adminModus ? 'block' : 'none'}; background:#fef9e7; padding:15px; border-radius:15px; border:1px dashed #f1c40f; margin-bottom:20px;">
+            <strong style="font-size:0.8rem;">⚙️ ADMIN: PODEŠAVANJE RUTE</strong>
+            <div style="margin-top:10px; display:grid; grid-template-columns: 1fr; gap:8px;">
+                <div>
+                    <label style="font-size:0.7rem;">GRADOVI NA RUTI (odvojite zarezom):</label>
+                    <input type="text" id="admZbirniNaziv" value="${nazivRute}" style="width:100%; padding:5px;">
+                    <small style="font-size:0.6rem; color:#666;">*Sajt će sam napraviti listu gradova od ovoga.</small>
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <div style="flex:1;">
+                        <label style="font-size:0.7rem;">DATUM:</label>
+                        <input type="text" id="admZbirniDatum" value="${datumRute}" style="width:100%; padding:5px;">
                     </div>
-                    <div style="display:flex; gap:5px;">
-                        <div style="flex:1;">
-                            <label style="font-size:0.7rem;">DATUM:</label>
-                            <input type="text" id="admZbirniDatum" value="${datumRute}" style="width:100%; padding:5px;">
+                    <div style="flex:1;">
+                        <label style="font-size:0.7rem;">SMJER A:</label>
+                        <input type="text" id="admSmjerA" value="${smjerA}" style="width:100%; padding:5px;">
+                        <div style="margin-top:5px; font-size:0.65rem; display:flex; align-items:center; gap:3px;">
+                            <input type="checkbox" id="chkStatusA" ${statusA ? 'checked' : ''}> Aktivno
                         </div>
-                        <div style="flex:1;">
-                            <label style="font-size:0.7rem;">SMJER A:</label>
-                            <input type="text" id="admSmjerA" value="${smjerA}" style="width:100%; padding:5px;">
-                        </div>
-                        <div style="flex:1;">
-                            <label style="font-size:0.7rem;">SMJER B:</label>
-                            <input type="text" id="admSmjerB" value="${smjerB}" style="width:100%; padding:5px;">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:0.7rem;">SMJER B:</label>
+                        <input type="text" id="admSmjerB" value="${smjerB}" style="width:100%; padding:5px;">
+                        <div style="margin-top:5px; font-size:0.65rem; display:flex; align-items:center; gap:3px;">
+                            <input type="checkbox" id="chkStatusB" ${statusB ? 'checked' : ''}> Aktivno
                         </div>
                     </div>
                 </div>
+            </div>
                 <button onclick="sacuvajAdminZbirni()" style="margin-top:10px; width:100%; padding:10px; background:var(--tamna); color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">AŽURIRAJ CIJELI SAJT</button>
 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
     <button onclick="stampajPlanRute('A')" style="padding:10px; background:#28a745; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; font-size:0.75rem;">🖨️ PLAN: SMJER A</button>
     <button onclick="stampajPlanRute('B')" style="padding:10px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; font-size:0.75rem;">🖨️ PLAN: SMJER B</button>
-</div>            
+</div>  
+
+<div style="margin-top:15px; background:#fff; padding:10px; border-radius:10px; border:1px solid #ccc;">
+    <strong style="font-size:0.75rem; display:block; margin-bottom:8px;">🗺️ GENERISANJE MAPE</strong>
+    
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+        <div>
+            <label style="font-size:0.65rem;">KRENI IZ:</label>
+            <select id="mapaStartniGrad" style="width:100%; padding:5px; font-size:0.8rem;">
+                ${listaGradova.map(g => `<option value="${g}">${g}</option>`).join('')}
+            </select>
+        </div>
+        <div>
+            <label style="font-size:0.65rem;">SMJER:</label>
+            <select id="mapaSmjer" style="width:100%; padding:5px; font-size:0.8rem;">
+                <option value="A">A (Odlazak)</option>
+                <option value="B">B (Povratak)</option>
+                <option value="ABA">ABA (Kružna tura)</option>
+            </select>
+        </div>
+    </div>
+
+
+
+<div style="margin-top:10px; display:flex; align-items:center; gap:5px; background:#e8f0fe; padding:8px; border-radius:5px; border:1px solid #1a73e8;">
+        <input type="checkbox" id="sviGradoviCheck" style="cursor:pointer; width:18px; height:18px;">
+        <label for="sviGradoviCheck" style="font-size:0.75rem; cursor:pointer; color:#1a73e8; font-weight:bold;"> 
+            🚀 SVI GRADOVI NA RUTI ODJEDNOM
+        </label>
+    </div>
+
+
+    <button onclick="pokreniRutiranje()" style="margin-top:10px; width:100%; padding:10px; background:#1a73e8; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">OTVORI RUTU U MAPAMA</button>
+</div>
+          
 </div>
 
             <div style="background:white; padding:20px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
@@ -306,15 +349,15 @@
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
                     <div>
                         <label style="font-size:0.8rem; font-weight:bold;">POLAZIŠTE:</label>
-                        <select id="zbPolaziste" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
-                            ${listaGradova.map(g => `<option value="${g}">${g}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-size:0.8rem; font-weight:bold;">ODREDIŠTE:</label>
-                        <select id="zbOdrediste" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
-                            ${listaGradova.map(g => `<option value="${g}">${g}</option>`).reverse().join('')}
-                        </select>
+                <select id="zbPolaziste" onchange="provjeriDostupnostSmjera()" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
+                    ${listaGradova.map(g => `<option value="${g}">${g}</option>`).join('')}
+                </select>
+            </div>
+            <div>
+                <label style="font-size:0.8rem; font-weight:bold;">ODREDIŠTE:</label>
+                <select id="zbOdrediste" onchange="provjeriDostupnostSmjera()" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
+                    ${listaGradova.map(g => `<option value="${g}">${g}</option>`).reverse().join('')}
+                </select>
                     </div>
                 </div>
 
@@ -345,7 +388,10 @@
     }
 }
 
-    // 2. PODACI I LOGIKA
+  
+
+
+  // 2. PODACI I LOGIKA
     const gradoviInd = ["Andrijevica", "Bar", "Berane", "Bijelo Polje", "Budva", "Cetinje", "Danilovgrad", "Gusinje", "Herceg Novi", "Kolašin", "Kotor", "Mojkovac", "Nikšić", "Petnjica", "Plav", "Plužine", "Pljevlja", "Podgorica", "Rožaje", "Šavnik", "Tivat", "Tuzi", "Ulcinj", "Zeta", "Žabljak"].sort();
 
         const cjenovnikInd = {
@@ -1581,8 +1627,48 @@ async function posaljiUpitZbirni() {
     }
 }
 
+
+function provjeriDostupnostSmjera() {
+    const pol = document.getElementById('zbPolaziste').value;
+    const odr = document.getElementById('zbOdrediste').value;
+    
+    // Lista gradova iz rute (kako bi znali šta je odlazak, a šta povratak)
+    const nazivRute = localStorage.getItem('tjd_zbirni_naziv_rute') || "";
+    const gradovi = nazivRute.split(',').map(g => g.trim());
+    
+    // Statusi kvačica iz Admina
+    const statusA = localStorage.getItem('tjd_status_a') !== 'false';
+    const statusB = localStorage.getItem('tjd_status_b') !== 'false';
+    
+    const pIdx = gradovi.indexOf(pol);
+    const oIdx = gradovi.indexOf(odr);
+    
+    const finalnoDugme = document.getElementById('zbFinalno');
+
+    // Provjera: Ako je polazište PRIJE odredišta, to je SMJER A (Odlazak)
+    if (pIdx < oIdx && !statusA) {
+        alert("Ovaj smjer (" + localStorage.getItem('tjd_zbirni_smjer_a') + ") je trenutno popunjen ili nedostupan.");
+        finalnoDugme.style.display = 'none'; // Sakrij dugme za zakazivanje
+        return;
+    } 
+    
+    // Provjera: Ako je polazište POSLIJE odredišta, to je SMJER B (Povratak)
+    if (pIdx > oIdx && !statusB) {
+        alert("Ovaj smjer (" + localStorage.getItem('tjd_zbirni_smjer_b') + ") je trenutno popunjen ili nedostupan.");
+        finalnoDugme.style.display = 'none'; // Sakrij dugme za zakazivanje
+        return;
+    }
+
+    // Ako je sve u redu, dozvoli prikaz dugmeta (pod uslovom da je izabrana cijena)
+    if (window.izabranaCijenaZbirni) {
+        finalnoDugme.style.display = 'block';
+    }
+}
+
+
+
 function sacuvajAdminZbirni() {
-    // Uzimanje vrijednosti iz inputa koje si definisao u innerHTML-u
+    // Uzimanje vrijednosti iz inputa
     const noviNaziv = document.getElementById('admZbirniNaziv').value;
     const noviDatum = document.getElementById('admZbirniDatum').value;
     const noviSmjerA = document.getElementById('admSmjerA').value;
@@ -1594,67 +1680,112 @@ function sacuvajAdminZbirni() {
     localStorage.setItem('tjd_zbirni_smjer_a', noviSmjerA);
     localStorage.setItem('tjd_zbirni_smjer_b', noviSmjerB);
 
+    // Dodajemo provjeru: ako postoje checkbox-ovi na ekranu, sačuvaj ih
+    if (document.getElementById('chkStatusA')) {
+        localStorage.setItem('tjd_status_a', document.getElementById('chkStatusA').checked);
+    }
+    if (document.getElementById('chkStatusB')) {
+        localStorage.setItem('tjd_status_b', document.getElementById('chkStatusB').checked);
+    }
+
     alert("✅ Podaci za rutu su uspješno ažurirani!");
     
-    // Osvježavanje stranice da se vide promjene
+    // Osvježavanje stranice
     location.reload();
 }
 
  
 function generisiPlanRute(sviPodaci, izabraniSmjer) {
     const rutaAdmin = localStorage.getItem('tjd_zbirni_naziv_rute') || "";
-    let gradovi = rutaAdmin.split(',').map(g => g.trim());
-
-    // Ako je Smjer B, okreni redoslijed gradova
-    if (izabraniSmjer === 'B') {
-        gradovi = [...gradovi].reverse();
-    }
+    const datumRute = localStorage.getItem('tjd_zbirni_datum') || "";
+    let gradoviOriginal = rutaAdmin.split(',').map(g => g.trim());
+    
+    // Gradovi za ispis (ovisi o tome što štampamo)
+    let gradoviZaIspis = (izabraniSmjer === 'B') ? [...gradoviOriginal].reverse() : [...gradoviOriginal];
 
     let html = `
-        <style>
-            body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
-            .grad-blok { border: 2px solid #000; margin-bottom: 20px; page-break-inside: avoid; }
-            .grad-naslov { background: #000; color: #fff; padding: 10px; font-size: 1.4rem; font-weight: bold; }
-            .sekcija { padding: 10px; border-bottom: 1px solid #ccc; }
-            .utovar { color: #1a7f37; font-weight: bold; }
-            .istovar { color: #d73a49; font-weight: bold; }
-            .stavka { margin: 8px 0; padding-bottom: 5px; border-bottom: 1px dashed #eee; font-size: 1.1rem; }
-            .info { color: #555; font-size: 0.9rem; }
-        </style>
-        <h1 style="text-align:center;">TJD COMPANY - PLAN RUTE (${izabraniSmjer === 'A' ? 'SJEVER-JUG' : 'JUG-SJEVER'})</h1>
-        <p style="text-align:center;">Datum: ${localStorage.getItem('tjd_zbirni_datum') || ""}</p>
+        <html>
+        <head>
+            <title>Manifest TJD</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+                .grad-blok { border: 2px solid #000; margin-bottom: 20px; page-break-inside: avoid; }
+                .grad-naslov { background: #000; color: #fff; padding: 10px; font-size: 1.4rem; font-weight: bold; }
+                .sekcija { padding: 10px; border-bottom: 1px solid #ccc; }
+                .utovar { color: #1a7f37; font-weight: bold; margin-bottom: 5px; }
+                .istovar { color: #d73a49; font-weight: bold; margin-bottom: 5px; }
+                .stavka { 
+                    margin: 8px 0; padding-bottom: 8px; border-bottom: 1px dashed #eee; 
+                    display: flex; justify-content: space-between; align-items: flex-start;
+                }
+                .info { color: #555; font-size: 0.95rem; line-height: 1.4; }
+                .naplata-box { border: 2px solid #000; padding: 8px; background: #f9f9f9; min-width: 140px; text-align: right; }
+                @media print { .no-print { display: none; } }
+            </style>
+        </head>
+        <body>
+            <h1 style="text-align:center; margin-bottom:0;">TJD COMPANY</h1>
+<div style="text-align:center; font-size: 0.9rem; margin-bottom: 10px;">${rutaAdmin}</div>
+            <h2 style="text-align:center; margin-top:5px;">PRAVAC: ${izabraniSmjer === 'A' ? 'A (Odlazak)' : 'B (Povratak)'} - ${datumRute}</h2>
+            <hr>
     `;
 
-    gradovi.forEach(grad => {
-        const gradL = grad.toLowerCase();
+    gradoviZaIspis.forEach(grad => {
+        const gradL = grad.toLowerCase().trim();
         
-        // Filtriraj utovare i istovare za ovaj konkretan grad
+        function pripadaSmjeru(stavka) {
+            let gradOd = (stavka.posgrad || "").toLowerCase().trim();
+            let gradDo = (stavka.prigrad || "").toLowerCase().trim();
+            let idxOd = gradoviOriginal.map(g => g.toLowerCase().trim()).indexOf(gradOd);
+            let idxDo = gradoviOriginal.map(g => g.toLowerCase().trim()).indexOf(gradDo);
+            if (idxOd === -1 || idxDo === -1) return false;
+            let jeSmjerA = idxOd < idxDo;
+            return (izabraniSmjer === 'A' && jeSmjerA) || (izabraniSmjer === 'B' && !jeSmjerA);
+        }
+
         const utovari = sviPodaci.filter(z => 
-            (z.status === "PRIHVAĆENO") && 
-            (z.ruta || "").toLowerCase().split(/[-→–]/)[0].trim() === gradL
+            (z.status || "").toUpperCase().trim() === "PRIHVAĆENO" && 
+            (z.posgrad || "").toLowerCase().trim() === gradL &&
+            pripadaSmjeru(z)
         );
 
         const istovari = sviPodaci.filter(z => 
-            (z.status === "PRIHVAĆENO") && 
-            (z.ruta || "").toLowerCase().split(/[-→–]/).pop().trim() === gradL
+            (z.status || "").toUpperCase().trim() === "PRIHVAĆENO" && 
+            (z.prigrad || "").toLowerCase().trim() === gradL &&
+            pripadaSmjeru(z)
         );
 
         if (utovari.length > 0 || istovari.length > 0) {
-            html += `<div class="grad-blok">
-                <div class="grad-naslov">📍 ${grad.toUpperCase()}</div>`;
+            html += `<div class="grad-blok"><div class="grad-naslov">📍 ${grad.toUpperCase()}</div>`;
             
             if (utovari.length > 0) {
-                html += `<div class="sekcija"><div class="utovar">⬆️ UTOVARI U OVOM GRADU:</div>`;
+                html += `<div class="sekcija"><div class="utovar">⬆️ UTOVARI:</div>`;
                 utovari.forEach(u => {
-                    html += `<div class="stavka">📦 ${u.imePrezime} (${u.tezina}kg) <br> <span class="info">Krajnje odredište: ${u.ruta.split(/[-→–]/).pop()} | Tel: ${u.tel || ""}</span></div>`;
+                    let naplata = "";
+                    if ((u.koplaca || "").toLowerCase().includes("pošiljalac")) {
+                        naplata = `<div class="naplata-box"><strong>NAPLATI: ${u.cijena}€</strong><br><small>[&nbsp;&nbsp;&nbsp;] PLAĆENO</small></div>`;
+                    }
+                    html += `<div class="stavka">
+                        <div><strong>[&nbsp;&nbsp;&nbsp;] TL #${u.id}</strong> | 📦 ${u.posime}<br>
+                        <span class="info">📞 ${u.postel} | ${u.posadresa}<br>Sadržaj: ${u.opis} | 🏁 Za: ${u.prigrad}</span></div>
+                        ${naplata}
+                    </div>`;
                 });
                 html += `</div>`;
             }
 
             if (istovari.length > 0) {
-                html += `<div class="sekcija"><div class="istovar">⬇️ ISTOVARI U OVOM GRADU:</div>`;
+                html += `<div class="sekcija"><div class="istovar">⬇️ ISTOVARI:</div>`;
                 istovari.forEach(i => {
-                    html += `<div class="stavka">✅ ISTOVARITI ZA: ${i.imePrezime} <br> <span class="info">Primanje od: ${i.ruta.split(/[-→–]/)[0]} | Tel primaoca: ${i.priTel || ""}</span></div>`;
+                    let naplata = "";
+                    if ((i.koplaca || "").toLowerCase().includes("primalac")) {
+                        naplata = `<div class="naplata-box"><strong>NAPLATI: ${i.cijena}€</strong><br><small>[&nbsp;&nbsp;&nbsp;] PLAĆENO</small></div>`;
+                    }
+                    html += `<div class="stavka">
+                        <div><strong>[&nbsp;&nbsp;&nbsp;] TL #${i.id}</strong> | ✅ ZA: ${i.priime}<br>
+                        <span class="info">📞 ${i.pritel} | ${i.priadresa}<br>Sadržaj: ${i.opis} | 🚚 Iz: ${i.posgrad}</span></div>
+                        ${naplata}
+                    </div>`;
                 });
                 html += `</div>`;
             }
@@ -1662,12 +1793,132 @@ function generisiPlanRute(sviPodaci, izabraniSmjer) {
         }
     });
 
+    html += `<div class="no-print" style="text-align:center;"><button onclick="window.print()">ŠTAMPAJ</button></div></body></html>`;
+
     const win = window.open('', '_blank');
-    win.document.write(html);
-    win.document.close();
-    win.print();
+    if(win) {
+        win.document.write(html);
+        win.document.close();
+    } else {
+        alert("Dozvolite pop-up prozor za štampu.");
+    }
 }
   
+async function pokreniRutiranje() {
+    const startniGradElement = document.getElementById('mapaStartniGrad');
+    const startniGrad = startniGradElement.value.trim();
+    const izabraniTip = document.getElementById('mapaSmjer').value; 
+    const datumRuteIzPanela = (localStorage.getItem('tjd_zbirni_datum') || "").trim();
+    const sviGradoviCheck = document.getElementById('sviGradoviCheck') ? document.getElementById('sviGradoviCheck').checked : false;
+    
+    const tipPrevoza = "ZBIRNI"; 
+    
+    try {
+        const res = await fetch(scriptURL + "?tip=" + tipPrevoza);
+        const podaci = await res.json();
+
+        const normalizujDatum = (str) => {
+            if (!str) return "";
+            let s = str.toString().trim();
+            if (s.includes("T") || s.includes("-")) {
+                let d = new Date(s);
+                if (!isNaN(d)) {
+                    d.setHours(d.getHours() + 5);
+                    return d.getDate().toString().padStart(2, '0') + 
+                           (d.getMonth() + 1).toString().padStart(2, '0') + 
+                           d.getFullYear().toString();
+                }
+            }
+            return s.replace(/\D/g, ''); 
+        };
+
+        const cistPanelDatum = normalizujDatum(datumRuteIzPanela);
+        const rutaAdmin = localStorage.getItem('tjd_zbirni_naziv_rute') || "";
+        
+        // Redoslijed gradova iz Admina
+        let gradoviOriginal = rutaAdmin.split(',').map(g => g.trim().toLowerCase());
+        
+        // Ako je smjer B, moramo okrenuti listu gradova da bi sortiranje radilo ispravno
+        let gradoviZaSort = [...gradoviOriginal];
+        if (izabraniTip === 'B') {
+            gradoviZaSort.reverse();
+        }
+
+        let privremeniNiz = []; 
+        let mojIzabraniGrad = startniGrad.toLowerCase();
+
+        podaci.forEach(z => {
+            const status = (z.status || "").toString().toUpperCase().trim();
+            const cistDatumTabele = normalizujDatum(z.planiranidatum || "");
+            
+            if (status === "PRIHVAĆENO" && cistDatumTabele === cistPanelDatum) {
+                let gradOd = (z.posgrad || "").toString().toLowerCase().trim();
+                let gradDo = (z.prigrad || "").toString().toLowerCase().trim();
+                
+                let idxOd = gradoviOriginal.indexOf(gradOd);
+                let idxDo = gradoviOriginal.indexOf(gradDo);
+                
+                if (idxOd !== -1 && idxDo !== -1) {
+                    let smjerNaloga = (idxOd < idxDo) ? 'A' : 'B';
+                    let rutaOdgovara = (izabraniTip === 'ABA') || (izabraniTip === smjerNaloga);
+
+                    if (rutaOdgovara) {
+                        // Provjera za UTOVAR
+                        if (sviGradoviCheck || gradOd === mojIzabraniGrad) {
+                            privremeniNiz.push({
+                                adresa: `(UT ${z.id}) ${z.posadresa.trim()}, ${z.posgrad.trim()}`,
+                                grad: gradOd,
+                                index: gradoviZaSort.indexOf(gradOd)
+                            });
+                        }
+                        // Provjera za ISTOVAR
+                        if (sviGradoviCheck || gradDo === mojIzabraniGrad) {
+                            privremeniNiz.push({
+                                adresa: `(IS ${z.id}) ${z.priadresa.trim()}, ${z.prigrad.trim()}`,
+                                grad: gradDo,
+                                index: gradoviZaSort.indexOf(gradDo)
+                            });
+                        }
+                    }
+                }
+            }
+        });
+
+        // SORTIRANJE: Ređamo adrese prema redoslijedu gradova u ruti
+        privremeniNiz.sort((a, b) => a.index - b.index);
+
+        // Uzimamo samo čiste adrese nakon sortiranja
+        let adreseZaMapu = privremeniNiz.map(item => item.adresa);
+        let jedinstveneAdrese = [...new Set(adreseZaMapu)].filter(a => a.length > 5);
+
+        if (jedinstveneAdrese.length === 0) {
+            alert("Nema naloga za izabrane kriterijume.");
+            return;
+        }
+
+        let origin = "Current+Location";
+        let destination = "";
+        let waypointsStr = "";
+
+        if (izabraniTip === 'ABA') {
+            let povratniGrad = (sviGradoviCheck) ? gradoviOriginal[0] : startniGrad;
+            destination = encodeURIComponent(povratniGrad);
+            waypointsStr = jedinstveneAdrese.map(a => encodeURIComponent(a)).join('|');
+        } else {
+            let lastIdx = jedinstveneAdrese.length - 1;
+            destination = encodeURIComponent(jedinstveneAdrese[lastIdx]);
+            if (jedinstveneAdrese.length > 1) {
+                waypointsStr = jedinstveneAdrese.slice(0, lastIdx).map(a => encodeURIComponent(a)).join('|');
+            }
+        }
+
+        const finalniUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypointsStr}&travelmode=driving`;
+        window.open(finalniUrl, '_blank');
+
+    } catch (error) {
+        console.error("Greška:", error);
+    }
+}
 </script>
 </body>
 </html>
