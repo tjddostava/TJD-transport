@@ -163,7 +163,7 @@
 
 <script>
     // URL tvoje Google Script aplikacije
-    const scriptURL = 'https://script.google.com/macros/s/AKfycby8-BEXi_R0G7QlDNq6coxp6vhlVUOWC-dRMrYfOoWvmck0Tmfux_05Qw4eZErBDjsn2g/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbweTvskmj1DIrkko-I7ZjqNUl41Vkcc2Zq5UCcHz1jIb_sWydr9YWyR-vakyplCKEBUkw/exec';
 
     let adminModus = false; // Ovo pamti da li si ulogovan
 
@@ -1707,8 +1707,15 @@ function generisiPlanRute(sviPodaci, izabraniSmjer) {
         <html>
         <head>
             <title>Manifest TJD</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
                 body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+                /* Dodajemo ove dvije linije da na mobitelu ne bude sitno */
+                @media screen and (max-width: 600px) {
+                    body { padding: 10px; font-size: 16px; }
+                    .stavka { flex-direction: column; }
+                    .naplata-box { width: 100%; text-align: center; margin-top: 10px; }
+                }
                 .grad-blok { border: 2px solid #000; margin-bottom: 20px; page-break-inside: avoid; }
                 .grad-naslov { background: #000; color: #fff; padding: 10px; font-size: 1.4rem; font-weight: bold; }
                 .sekcija { padding: 10px; border-bottom: 1px solid #ccc; }
@@ -1725,7 +1732,7 @@ function generisiPlanRute(sviPodaci, izabraniSmjer) {
         </head>
         <body>
             <h1 style="text-align:center; margin-bottom:0;">TJD COMPANY</h1>
-<div style="text-align:center; font-size: 0.9rem; margin-bottom: 10px;">${rutaAdmin}</div>
+            <div style="text-align:center; font-size: 0.9rem; margin-bottom: 10px;">${rutaAdmin}</div>
             <h2 style="text-align:center; margin-top:5px;">PRAVAC: ${izabraniSmjer === 'A' ? 'A (Odlazak)' : 'B (Povratak)'} - ${datumRute}</h2>
             <hr>
     `;
@@ -1793,7 +1800,7 @@ function generisiPlanRute(sviPodaci, izabraniSmjer) {
         }
     });
 
-    html += `<div class="no-print" style="text-align:center;"><button onclick="window.print()">ŠTAMPAJ</button></div></body></html>`;
+    html += `<div class="no-print" style="text-align:center;"><button style="padding:15px; width:100%;" onclick="window.print()">ŠTAMPAJ</button></div></body></html>`;
 
     const win = window.open('', '_blank');
     if(win) {
@@ -1866,7 +1873,7 @@ async function pokreniRutiranje() {
                         // Provjera za UTOVAR
                         if (sviGradoviCheck || gradOd === mojIzabraniGrad) {
                             privremeniNiz.push({
-                                adresa: ` ${z.posadresa.trim()}, ${z.posgrad.trim()}`,
+                                adresa: `(UT ${z.id}) ${z.posadresa.trim()}, ${z.posgrad.trim()}`,
                                 grad: gradOd,
                                 index: gradoviZaSort.indexOf(gradOd)
                             });
@@ -1874,7 +1881,7 @@ async function pokreniRutiranje() {
                         // Provjera za ISTOVAR
                         if (sviGradoviCheck || gradDo === mojIzabraniGrad) {
                             privremeniNiz.push({
-                                adresa: ` ${z.priadresa.trim()}, ${z.prigrad.trim()}`,
+                                adresa: `(IS ${z.id}) ${z.priadresa.trim()}, ${z.prigrad.trim()}`,
                                 grad: gradDo,
                                 index: gradoviZaSort.indexOf(gradDo)
                             });
