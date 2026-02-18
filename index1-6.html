@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TJD COMPANY DOO - Logistika</title>
+    <style>
+        /* OSNOVNI STIL I BOJE */
+        :root { --primarna: #28a745; --sekundarna: #007bff; --tamna: #2c3e50; --svijetla: #f8f9fa; --siva: #6c757d; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; background: var(--svijetla); color: var(--tamna); }
+
+        /* HEADER */
+        header { background: white; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); sticky; top: 0; z-index: 100; }
+        .logo h1 { margin: 0; color: var(--primarna); letter-spacing: 1px; cursor: pointer; }
+
+        /* O NAMA SEKCIJA */
+        .hero { padding: 30px 20px; text-align: center; background: white; border-bottom: 1px solid #eee; }
+        .hero h2 { color: var(--tamna); margin-bottom: 10px; }
+        .hero p { max-width: 600px; margin: auto; color: var(--siva); font-size: 1.1rem; }
+
+        /* GLAVNA DUGMAD (KOSTUR) */
+        .izbor-prevoza { display: flex; gap: 10px; padding: 20px; max-width: 900px; margin: auto; }
+        .btn-glavni { 
+            flex: 1; padding: 20px 10px; border-radius: 15px; border: 2px solid #eee; 
+            background: white; font-weight: bold; cursor: pointer; text-align: center; 
+            transition: 0.3s; font-size: 0.9rem; text-transform: uppercase;
+        }
+        .btn-glavni.active { border-color: var(--primarna); background: #e8f5e9; color: var(--primarna); }
+
+        /* SADRŽAJ (MJESTO ZA KALKULATORE) */
+        .sadrzaj { padding: 20px; max-width: 900px; margin: auto; min-height: 200px; }
+        .placeholder-text { text-align: center; color: var(--siva); border: 2px dashed #ccc; padding: 40px; border-radius: 15px; }
+
+        /* STIL ZA ŠTAMPU */
+        @media print {
+        body * { visibility: hidden; }
+        #tovarniListPrint, #tovarniListPrint * { visibility: visible; }
+        #tovarniListPrint { position: absolute; left: 0; top: 0; width: 100%; }
+        .no-print { display: none !important; }
+        }
+
+        .tovarni-list-okvir {background: white; border: none; padding: 30px; 
+         margin-top: 20px; color: black; font-family: 'Courier New', Courier, monospace; }
+        .tovarni-red { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .tovarni-sekcija { width: 48%; border: 1px solid #ccc; padding: 10px; font-size: 0.9rem; }
+
+        /* FOOTER I KONTAKT */
+        footer { background: var(--tamna); color: white; padding: 40px 20px; text-align: center; margin-top: 50px; }
+        .kontakt-info { margin-bottom: 20px; }
+        .kontakt-info p { margin: 5px 0; opacity: 0.9; }
+        .footer-linkovi a { color: var(--primarna); text-decoration: none; font-weight: bold; cursor: pointer; margin: 0 10px; }
+
+        /* MODAL (USLOVI POSLOVANJA) */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); overflow-y: auto; }
+        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 90%; max-width: 600px; border-radius: 20px; position: relative; }
+        .close { position: absolute; right: 20px; top: 15px; font-size: 28px; font-weight: bold; cursor: pointer; }   
+        .uslovi-tekst { font-size: 0.9rem; line-height: 1.5; color: #444; text-align: left; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo" onclick="aktivirajAdmina()">
+        <h1>TJD COMPANY DOO</h1>
+    </div>
+</header>
+
+<div class="hero" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 20px; text-align: left; padding: 30px 20px;">
+    
+    <div style="flex: 1; min-width: 280px; max-width: 400px;">
+        <img src="kombi.png" alt="TJD Kombi" style="width: 100%; height: auto; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.12)); border-radius: 10px;">
+    </div>
+
+    <div style="flex: 1; min-width: 280px; max-width: 450px;">
+        <h2 style="color: var(--tamna); margin: 0; font-size: 1.8rem;">Profesionalna Logistika</h2>
+        <p style="color: var(--siva); font-size: 1.1rem; line-height: 1.5; margin-top: 10px;">
+            Direktne dostave od grada do grada. Brz, siguran i pouzdan transport robe širom Crne Gore.
+        </p>
+    </div>
+</div>
+
+
+<div class="izbor-prevoza">
+    <button id="btnInd" class="btn-glavni" onclick="prikaziSekciju('individualni')">Individualni prevoz</button>
+    <button id="btnZbir" class="btn-glavni" onclick="prikaziSekciju('zbirni')">Zbirni prevoz</button>
+</div>
+
+<div class="sadrzaj" id="glavniSadrzaj">
+    <div class="placeholder-text">
+        Izaberite vrstu prevoza iznad kako biste započeli kalkulaciju.
+    </div>
+</div>
+
+<footer>
+    <div class="kontakt-info">
+        <h3>KONTAKT PODACI</h3>
+        <p>TJD COMPANY DOO</p>
+        <p>PIB: 03627446</p>
+        <p>📍 Sjedište: Mojkovac, Crna Gora</p>
+        <p>📞 Telefon: +382 68 812 077</p>
+        <p>📧 Email: tjd.dostava@gmail.com</p>
+        <span id="brojPosjetaPrikaz">...</span>
+        
+        
+    </div>
+    <div class="footer-linkovi">
+        <a onclick="otvoriUslove()">Uslovi poslovanja</a>
+        <span style="color:white; opacity:0.3; margin: 0 10px;">|</span>
+        <a onclick="otvoriPolitiku()" style="cursor:pointer; color:var(--primarna); font-weight:bold;">Politika privatnosti</a>
+        <span style="color:white; opacity:0.3; margin: 0 10px;">|</span>
+        <a href="mailto:tjd.dostava@gmail.com">Pošaljite upit</a>
+    </div>
+    <p style="font-size: 0.8rem; opacity: 0.5; margin-top: 30px;">© 2026 TJD COMPANY DOO. Sva prava zadržana.</p>
+</footer>
+    
+
+<div id="usloviModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="zatvoriUslove()">&times;</span>
+        <h2 style="color:var(--primarna); border-bottom: 2px solid #eee; padding-bottom:10px;">USLOVI POSLOVANJA</h2>
+        <div class="uslovi-tekst">
+            <p><strong>1. Opšte odredbe:</strong> Korišćenjem ovog sajta, korisnik je saglasan sa uslovima TJD COMPANY DOO.</p>
+            <p><strong>2. Informativni karakter:</strong> Cijene su procjena zasnovana na unijetim podacima.</p>
+            <p><strong>3. Pravo na odbijanje:</strong> Prevoznik može odbiti robu koja prevazilazi gabarite vozila (1200kg nosivost).</p>
+            <p><strong>4. Porijeklo robe:</strong> Korisnik garantuje da je vlasnik robe.</p>
+            <p><strong>5. Zaštita podataka:</strong> Podaci se koriste isključivo za realizaciju transporta.</p>
+            <p><strong>6. Reklamacije:</strong> Roba se pregleda pri istovaru.</p>
+            <p><strong>7. Sporovi:</strong> Nadležan je sud u Podgorici.</p>
+        </div>
+        <button onclick="zatvoriUslove()" style="width:100%; padding:15px; margin-top:20px; border-radius:10px; border:none; background:var(--primarna); color:white; font-weight:bold;">ZATVORI I NASTAVI</button>
+    </div>
+</div>
+<div id="politikaModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="zatvoriPolitiku()">&times;</span>
+        <h2 style="color:var(--primarna); border-bottom: 2px solid #eee; padding-bottom:10px;">POLITIKA PRIVATNOSTI</h2>
+        <div class="uslovi-tekst">
+            <p><strong>1. OSNOVNE INFORMACIJE:</strong> Rukovalac podacima je <strong>TJD COMPANY DOO</strong>, sa sjedištem u Mojkovcu.Za sva pitanja u vezi sa vašim podacima možete nas kontaktirati na: tjd.dostava@gmail.com.</p>
+            <p><strong>2. KOJE PODATKE PRIKUPLJAMO?</strong> Prikupljamo samo neophodne podatke za realizaciju transporta: Ime (ili naziv firme), telefon, adrese i opis robe.</p>
+            <p><strong>3. SVRHA I PRAVNI OSNOV OBRADE:</strong> Vaše podatke obrađujemo isključivo u sledeće svrhe:
+​Izvršenje ugovora: Da bismo vam poslali ponudu i izvršili uslugu prevoza koju ste tražili.
+​Zakonska obaveza: Radi izdavanja računa, putnih naloga i poštovanja poreskih propisa.
+​Legitimni interes: Da bismo odgovorili na vaše upite poslate putem sajta.</p>
+            <p><strong>4. DELJENJE PODATAKA SA TREĆIM LICIMA:</strong> Vaši podaci se čuvaju u našoj bazi. Dijelimo ih sa trećim licima samo kada je to neophodno za rad:
+​Vozačima/saradnicima: Isključivo adrese i kontakt telefon radi realizacije prevoza.
+​Knjigovodstvu: Radi obrade faktura.
+​Nadležnim organima: Ako smo na to obavezni zakonom (npr. provera saobraćajne policije ili inspekcije).</p>
+            <p><strong>5. ROK ČUVANJA PODATAKA:</strong>Podatke čuvamo onoliko dugo koliko je potrebno da se završi usluga prevoza, uz poštovanje zakonskih rokova za čuvanje dokumentacije (npr. računi se po zakonu čuvaju 5 godina).</p>
+            <p><strong>6. VAŠA PRAVA:</strong>U skladu sa zakonom, imate sledeća prava:
+​Pravo da znate koje podatke o vama imamo.
+​Pravo da tražite ispravku netačnih podataka.
+​Pravo da tražite brisanje vaših podataka ("pravo na zaborav"), ukoliko to nije u suprotnosti sa zakonom (npr. već izdata faktura).Imate pravo na uvid, ispravku ili brisanje svojih podataka u svakom trenutku slanjem upita na našu email adresu tjd.dostava@gmail.com.</p>
+        </div>
+        <button onclick="zatvoriPolitiku()" style="width:100%; padding:15px; margin-top:20px; border-radius:10px; border:none; background:var(--primarna); color:white; font-weight:bold;">ZATVORI</button>
+    </div>
+</div>
+
+    
+    
+    
+</div>
+
+<script>
+    // URL tvoje Google Script aplikacije
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbweTvskmj1DIrkko-I7ZjqNUl41Vkcc2Zq5UCcHz1jIb_sWydr9YWyR-vakyplCKEBUkw/exec';
+
+    let adminModus = false; // Ovo pamti da li si ulogovan
+
+    // 1. GLAVNA FUNKCIJA ZA PROMENU SEKCIJA
+    function prikaziSekciju(tip) {
+    const sadrzaj = document.getElementById('glavniSadrzaj');
+    document.getElementById('btnInd').classList.remove('active');
+    document.getElementById('btnZbir').classList.remove('active');
+    
+    if(tip === 'individualni') {
+        document.getElementById('btnInd').classList.add('active');
+        
+        const s1 = localStorage.getItem('tjd_d1') || "10";
+        const s2 = localStorage.getItem('tjd_d2') || "15";
+        const s3 = localStorage.getItem('tjd_d3') || "20";
+
+        sadrzaj.innerHTML = `
+            <div id="adminOkvir" style="display:${adminModus ? 'block' : 'none'}; background:#fef9e7; padding:15px; border-radius:15px; border:1px dashed #f1c40f; margin-bottom:20px; font-size:0.85rem;">
+                <strong>⚙️ POSTAVKE POPUSTA (%)</strong><br>
+                <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                    <span>200-300km: <input type="number" id="disc1" value="${s1}" style="width:45px;">%</span>
+                    <span>300-400km: <input type="number" id="disc2" value="${s2}" style="width:45px;">%</span>
+                    <span>400km+: <input type="number" id="disc3" value="${s3}" style="width:45px;">%</span>
+                    <button onclick="sacuvajPopuste()" style="background:var(--primarna); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">SAČUVAJ</button>
+                </div>
+        
+// Dodaj ovo unutar adminOkvir-a
+<div style="margin-top:15px; padding-top:10px; border-top:1px solid #ddd;">
+    <strong>📢 MARKETING (AKCIJA)</strong><br>
+    <input type="text" id="akcijaTekst" placeholder="Npr. AKCIJA DO KRAJA MJESECA!" style="width:70%; padding:5px; margin-top:5px;">
+    <label><input type="checkbox" id="akcijaAktivna"> Prikaži</label>
+    <button onclick="sacuvajMarketing()" style="background:var(--sekundarna); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; margin-left:10px;">OSVJEŽI</button>
+</div>
+        
+        
+// Dodaj ovo na sam vrh adminOkvir-a (unutar innerHTML-a)
+<div style="background:white; padding:10px; border-radius:10px; margin-bottom:15px; border:1px solid #f1c40f; text-align:center;">
+    <span style="font-size:0.9rem; color:var(--siva);">UKUPNO POSJETA SAJTU:</span><br>
+    <strong style="font-size:1.5rem; color:var(--tamna);" id="brojPosjetaPrikaz">...</strong>
+</div>
+        
+        
+             
+        
+            </div>
+
+            <div style="background:white; padding:20px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+                <h3 style="text-align:center; margin-top:0; color:var(--primarna);">KALKULATOR      ZA INDIVIDUALNI PREVOZ</h3>
+
+                <div style="background:#eef2f7; padding:12px; border-radius:10px; margin-bottom:15px; font-size:0.9rem; border-left:4px solid var(--sekundarna);">
+                <strong>🚛 ŠTA JE OVO?</strong> Ekskluzivno angažovanje kombi vozila. Roba ide direktno od utovara do istovara bez stajanja. Idealno za hitne isporuke i selidbe.
+                 </div>
+
+                <label style="font-weight:bold; display:block; margin-top:10px;">POLAZIŠTE:</label>
+                <select id="from" onchange="izracunajInd()" style="width:100%; padding:12px; border-radius:10px; border:2px solid #eee; margin-top:5px;"></select>
+                <label style="font-weight:bold; display:block; margin-top:15px;">ODREDIŠTE:</label>
+                <select id="to" onchange="izracunajInd()" style="width:100%; padding:12px; border-radius:10px; border:2px solid #eee; margin-top:5px;"></select>
+                <div id="indRezultat" style="margin-top:20px; text-align:center; min-height:50px;">
+                    <p style="color:var(--siva)">Odaberite gradove da vidite cijenu.</p>
+                </div>
+                <button id="btnNastaviInd" onclick="otvoriFormuPodataka()" class="btn-akcija" style="display:none; background:var(--primarna); color:white; border:none; padding:18px; width:100%; border-radius:12px; font-weight:bold; margin-top:15px; cursor:pointer; font-size:1.1rem;">ZAKAŽI PREVOZ</button>
+            </div>
+            <div id="formaPodataka" style="margin-top:20px; display:none;"></div>
+            <div id="istorijaZahtjeva" style="margin-top:20px;"></div>
+        `;
+        popuniGradoveInd();
+        renderujIstoriju(); // Ovo će povući tabelu sa statusima
+ 
+
+// ZBIRNI
+
+    } else {
+        document.getElementById('btnZbir').classList.add('active');
+        
+        // Učitavanje Admin podešavanja
+        const datumRute = localStorage.getItem('tjd_zbirni_datum') || "U pripremi";
+        const nazivRute = localStorage.getItem('tjd_zbirni_naziv_rute') || "Mojkovac, Bijelo Polje, Berane, Kolašin, Podgorica";
+        const smjerA = localStorage.getItem('tjd_zbirni_smjer_a') || "SJEVER ➔ PG";
+        const smjerB = localStorage.getItem('tjd_zbirni_smjer_b') || "PG ➔ SJEVER";
+
+        // Pretvaramo tvoj tekstualni opis rute u listu gradova za klijenta
+        const listaGradova = nazivRute.split(',').map(g => g.trim());
+
+        sadrzaj.innerHTML = `
+            <div id="adminOkvirZbirni" style="display:${adminModus ? 'block' : 'none'}; background:#fef9e7; padding:15px; border-radius:15px; border:1px dashed #f1c40f; margin-bottom:20px;">
+                <strong style="font-size:0.8rem;">⚙️ ADMIN: PODEŠAVANJE RUTE</strong>
+                <div style="margin-top:10px; display:grid; grid-template-columns: 1fr; gap:8px;">
+                    <div>
+                        <label style="font-size:0.7rem;">GRADOVI NA RUTI (odvojite zarezom):</label>
+                        <input type="text" id="admZbirniNaziv" value="${nazivRute}" style="width:100%; padding:5px;">
+                        <small style="font-size:0.6rem; color:#666;">*Sajt će sam napraviti listu gradova od ovoga.</small>
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <div style="flex:1;">
+                            <label style="font-size:0.7rem;">DATUM:</label>
+                            <input type="text" id="admZbirniDatum" value="${datumRute}" style="width:100%; padding:5px;">
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-size:0.7rem;">SMJER A:</label>
+                            <input type="text" id="admSmjerA" value="${smjerA}" style="width:100%; padding:5px;">
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-size:0.7rem;">SMJER B:</label>
+                            <input type="text" id="admSmjerB" value="${smjerB}" style="width:100%; padding:5px;">
+                        </div>
+                    </div>
+                </div>
+                <button onclick="sacuvajAdminZbirni()" style="margin-top:10px; width:100%; padding:10px; background:var(--tamna); color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">AŽURIRAJ CIJELI SAJT</button>
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+    <button onclick="stampajPlanRute('A')" style="padding:10px; background:#28a745; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; font-size:0.75rem;">🖨️ PLAN: SMJER A</button>
+    <button onclick="stampajPlanRute('B')" style="padding:10px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; font-size:0.75rem;">🖨️ PLAN: SMJER B</button>
+</div>            
+</div>
+
+            <div style="background:white; padding:20px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
+                <h3 style="text-align:center; color:var(--sekundarna); margin-bottom:5px;">ZBIRNI PREVOZ (CRAFTER L2H2)</h3>
+                
+                <div style="background:#e7f3ff; color:var(--sekundarna); padding:12px; border-radius:10px; text-align:center; font-weight:bold; margin-bottom:15px; border:1px solid #b3d7ff;">
+    🗓️ SLEDEĆI POLAZAK: <span id="fiksniDatumRute">${datumRute}</span><br>
+    <small style="color:#555; font-weight:normal;">Ruta: ${nazivRute}</small>
+</div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:25px;">
+                    <div style="text-align:center;">
+                        <small style="font-weight:bold;">${smjerA}</small>
+                        <div style="background:#eee; height:15px; border-radius:10px; overflow:hidden; border:1px solid #ddd; margin-top:5px;">
+                            <div id="barSjPg" style="background:var(--primarna); width:0%; height:100%; transition:1.5s;"></div>
+                        </div>
+                        <small id="tekstSjPg" style="font-size:0.7rem; color:var(--siva);">Učitavanje...</small>
+                    </div>
+                    <div style="text-align:center;">
+                        <small style="font-weight:bold;">${smjerB}</small>
+                        <div style="background:#eee; height:15px; border-radius:10px; overflow:hidden; border:1px solid #ddd; margin-top:5px;">
+                            <div id="barPgSj" style="background:var(--primarna); width:0%; height:100%; transition:1.5s;"></div>
+                        </div>
+                        <small id="tekstPgSj" style="font-size:0.7rem; color:var(--siva);">Učitavanje...</small>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                    <div>
+                        <label style="font-size:0.8rem; font-weight:bold;">POLAZIŠTE:</label>
+                        <select id="zbPolaziste" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
+                            ${listaGradova.map(g => `<option value="${g}">${g}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:0.8rem; font-weight:bold;">ODREDIŠTE:</label>
+                        <select id="zbOdrediste" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
+                            ${listaGradova.map(g => `<option value="${g}">${g}</option>`).reverse().join('')}
+                        </select>
+                    </div>
+                </div>
+
+                <label style="font-weight:bold; font-size:0.9rem;">ODABERITE TIP POŠILJKE:</label>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+                    <button onclick="birajZbirni(30, 'Mali paket/Gume')" class="btn-zbir-cijena">30€<br><small>Do 30kg / 0.25m³</small></button>
+                    <button onclick="birajZbirni(50, 'Srednji teret')" class="btn-zbir-cijena">50€<br><small>Mašine, frižideri (1.5m³)</small></button>
+                    <button onclick="birajZbirni(80, 'Veliki teret')" class="btn-zbir-cijena">80€<br><small>Krevet, ormar (4m³)</small></button>
+                    <button onclick="birajZbirni(100, 'Gabaritni teret')" class="btn-zbir-cijena">100€<br><small>Garniture, ugaone (7m³)</small></button>
+                </div>
+
+                <div id="zbFinalno" style="margin-top:20px; display:none;">
+                    <button onclick="otvoriFormuZbirni()" class="btn-akcija" style="background:var(--primarna); color:white; border:none; padding:18px; width:100%; border-radius:12px; font-weight:bold; cursor:pointer;">ZAKAŽI PREVOZ</button>
+                </div>
+            </div>            
+            <div id="formaPodataka" style="margin-top:20px; display:none;"></div>
+            <div id="istorijaZahtjeva" style="margin-top:20px;"></div>
+
+            <style>
+                .btn-zbir-cijena { padding:12px 5px; border-radius:10px; border:2px solid #eee; background:white; cursor:pointer; font-weight:bold; font-size:0.9rem; }
+                .btn-zbir-cijena small { font-weight:normal; font-size:0.6rem; color:#666; display:block; margin-top:3px; }
+                .btn-zbir-cijena.selected { border-color:var(--sekundarna); background:#e7f3ff; color:var(--sekundarna); }
+            </style>
+        `;
+        
+        osvjeziPopunjenostCraftera();
+        renderujIstoriju('ZBIRNI');
+    }
+}
+
+    // 2. PODACI I LOGIKA
+    const gradoviInd = ["Andrijevica", "Bar", "Berane", "Bijelo Polje", "Budva", "Cetinje", "Danilovgrad", "Gusinje", "Herceg Novi", "Kolašin", "Kotor", "Mojkovac", "Nikšić", "Petnjica", "Plav", "Plužine", "Pljevlja", "Podgorica", "Rožaje", "Šavnik", "Tivat", "Tuzi", "Ulcinj", "Zeta", "Žabljak"].sort();
+
+        const cjenovnikInd = {
+        // PODGORICA
+        "Podgorica-Kolašin": {osnovna: 101, km: 163.4},
+        "Podgorica-Mojkovac": {osnovna: 103, km: 163.5},
+        "Podgorica-Bijelo Polje": {osnovna: 135, km: 218},
+        "Podgorica-Berane": {osnovna: 142, km: 229},
+        "Podgorica-Pljevlja": {osnovna: 208, km: 336},
+        "Podgorica-Plav": {osnovna: 188, km: 303},
+        "Podgorica-Rožaje": {osnovna: 182, km: 294},
+        "Podgorica-Andrijevica": {osnovna: 157, km: 254},
+
+        // BIJELO POLJE
+        "Bijelo Polje-Berane": {osnovna: 77, km: 124},
+        "Bijelo Polje-Mojkovac": {osnovna: 51, km: 60},
+        "Bijelo Polje-Kolašin": {osnovna: 66, km: 106},
+        "Bijelo Polje-Podgorica": {osnovna: 135, km: 218},
+        "Bijelo Polje-Pljevlja": {osnovna: 124, km: 200},
+        "Bijelo Polje-Nikšić": {osnovna: 202, km: 326},
+        "Bijelo Polje-Cetinje": {osnovna: 181, km: 292},
+        "Bijelo Polje-Herceg Novi": {osnovna: 309, km: 499},
+        "Bijelo Polje-Kotor": {osnovna: 250, km: 404},
+        "Bijelo Polje-Tivat": {osnovna: 250, km: 404},
+        "Bijelo Polje-Budva": {osnovna: 216, km: 348},
+        "Bijelo Polje-Bar": {osnovna: 200, km: 322},
+        "Bijelo Polje-Ulcinj": {osnovna: 231, km: 372},
+        "Bijelo Polje-Tuzi": {osnovna: 145, km: 234},
+        "Bijelo Polje-Plav": {osnovna: 131, km: 212},
+        "Bijelo Polje-Rožaje": {osnovna: 113, km: 182},
+        "Bijelo Polje-Andrijevica": {osnovna: 92, km: 148},
+
+        // BERANE
+        "Berane-Kolašin": {osnovna: 74, km: 120},
+        "Berane-Podgorica": {osnovna: 142, km: 229},
+        "Berane-Mojkovac": {osnovna: 74, km: 120},
+        "Berane-Bijelo Polje": {osnovna: 77, km: 124},
+        "Berane-Pljevlja": {osnovna: 152, km: 245},
+        "Berane-Nikšić": {osnovna: 203, km: 328},
+        "Berane-Cetinje": {osnovna: 187, km: 302},
+        "Berane-Herceg Novi": {osnovna: 315, km: 508},
+        "Berane-Kotor": {osnovna: 250, km: 404},
+        "Berane-Tivat": {osnovna: 250, km: 404},
+        "Berane-Budva": {osnovna: 216, km: 348},
+        "Berane-Bar": {osnovna: 200, km: 322},
+        "Berane-Ulcinj": {osnovna: 231, km: 372},
+        "Berane-Tuzi": {osnovna: 145, km: 234},
+        "Berane-Plav": {osnovna: 119, km: 192},
+
+        // MOJKOVAC
+        "Mojkovac-Bijelo Polje": {osnovna: 51, km: 60},
+        "Mojkovac-Berane": {osnovna: 74, km: 120},
+        "Mojkovac-Kolašin": {osnovna: 41, km: 46},
+        "Mojkovac-Podgorica": {osnovna: 103, km: 166},
+        "Mojkovac-Pljevlja": {osnovna: 108, km: 174},
+        "Mojkovac-Nikšić": {osnovna: 174, km: 280},
+        "Mojkovac-Cetinje": {osnovna: 146, km: 236},
+        "Mojkovac-Herceg Novi": {osnovna: 279, km: 450},
+        "Mojkovac-Kotor": {osnovna: 208, km: 336},
+        "Mojkovac-Tivat": {osnovna: 208, km: 336},
+        "Mojkovac-Budva": {osnovna: 181, km: 292},
+        "Mojkovac-Bar": {osnovna: 165, km: 266},
+        "Mojkovac-Ulcinj": {osnovna: 196, km: 316},
+        "Mojkovac-Tuzi": {osnovna: 110, km: 178},
+        "Mojkovac-Plav": {osnovna: 119, km: 192},
+        "Mojkovac-Rožaje": {osnovna: 109, km: 176},
+        "Mojkovac-Andrijevica": {osnovna: 83, km: 135},
+
+        // KOLAŠIN
+        "Kolašin-Podgorica": {osnovna: 101, km: 163.4},
+        "Kolašin-Mojkovac": {osnovna: 41, km: 46},
+        "Kolašin-Bijelo Polje": {osnovna: 66, km: 106},
+        "Kolašin-Berane": {osnovna: 74, km: 120},
+        "Kolašin-Pljevlja": {osnovna: 136, km: 220},
+        "Kolašin-Nikšić": {osnovna: 163, km: 263},
+        "Kolašin-Cetinje": {osnovna: 146, km: 236},
+        "Kolašin-Herceg Novi": {osnovna: 279, km: 450},
+        "Kolašin-Kotor": {osnovna: 208, km: 336},
+        "Kolašin-Tivat": {osnovna: 208, km: 336},
+        "Kolašin-Budva": {osnovna: 181, km: 292},
+        "Kolašin-Bar": {osnovna: 165, km: 266},
+        "Kolašin-Ulcinj": {osnovna: 196, km: 316},
+        "Kolašin-Tuzi": {osnovna: 110, km: 178},
+        "Kolašin-Plav": {osnovna: 119, km: 192},
+        "Kolašin-Rožaje": {osnovna: 109, km: 176},
+        "Kolašin-Andrijevica": {osnovna: 84, km: 135},
+
+        // PLJEVLJA
+        "Pljevlja-Bijelo Polje": {osnovna: 124, km: 200},
+        "Pljevlja-Berane": {osnovna: 152, km: 245},
+        "Pljevlja-Mojkovac": {osnovna: 108, km: 174},
+        "Pljevlja-Kolašin": {osnovna: 136, km: 220},
+        "Pljevlja-Podgorica": {osnovna: 208, km: 336},
+        "Pljevlja-Nikšić": {osnovna: 217, km: 350},
+        "Pljevlja-Cetinje": {osnovna: 260, km: 420},
+        "Pljevlja-Herceg Novi": {osnovna: 327, km: 528},
+        "Pljevlja-Kotor": {osnovna: 316, km: 510},
+        "Pljevlja-Tivat": {osnovna: 316, km: 510},
+        "Pljevlja-Budva": {osnovna: 289, km: 466},
+        "Pljevlja-Bar": {osnovna: 272, km: 438},
+        "Pljevlja-Ulcinj": {osnovna: 304, km: 490},
+        "Pljevlja-Tuzi": {osnovna: 217, km: 350},
+        "Pljevlja-Plav": {osnovna: 203, km: 327},
+        "Pljevlja-Rožaje": {osnovna: 193, km: 311},
+        "Pljevlja-Andrijevica": {osnovna: 172, km: 277},
+
+        // NIKŠIĆ
+        "Nikšić-Bijelo Polje": {osnovna: 202, km: 326},
+        "Nikšić-Berane": {osnovna: 202, km: 326},
+        "Nikšić-Mojkovac": {osnovna: 174, km: 280},
+        "Nikšić-Kolašin": {osnovna: 174, km: 280},
+        "Nikšić-Pljevlja": {osnovna: 217, km: 350},
+        "Nikšić-Plav": {osnovna: 255, km: 411},
+        "Nikšić-Rožaje": {osnovna: 245, km: 395},
+        "Nikšić-Andrijevica": {osnovna: 219, km: 354},
+        "Nikšić-Budva": {osnovna: 239, km: 385},
+
+        // CETINJE
+        "Cetinje-Bijelo Polje": {osnovna: 181, km: 292},
+        "Cetinje-Berane": {osnovna: 181, km: 292},
+        "Cetinje-Mojkovac": {osnovna: 146, km: 236},
+        "Cetinje-Kolašin": {osnovna: 146, km: 236},
+        "Cetinje-Pljevlja": {osnovna: 260, km: 420},
+        "Cetinje-Plav": {osnovna: 235, km: 379},
+        "Cetinje-Rožaje": {osnovna: 229, km: 369},
+        "Cetinje-Andrijevica": {osnovna: 203, km: 328},
+
+        // HERCEG NOVI
+        "Herceg Novi-Bijelo Polje": {osnovna: 309, km: 499},
+        "Herceg Novi-Berane": {osnovna: 309, km: 499},
+        "Herceg Novi-Mojkovac": {osnovna: 279, km: 450},
+        "Herceg Novi-Kolašin": {osnovna: 279, km: 450},
+        "Herceg Novi-Pljevlja": {osnovna: 327, km: 528},
+        "Herceg Novi-Plav": {osnovna: 368, km: 593},
+        "Herceg Novi-Rožaje": {osnovna: 357, km: 575},
+        "Herceg Novi-Andrijevica": {osnovna: 331, km: 534},
+
+        // KOTOR & TIVAT
+        "Kotor-Bijelo Polje": {osnovna: 250, km: 404},
+        "Tivat-Bijelo Polje": {osnovna: 250, km: 404},
+        "Kotor-Berane": {osnovna: 250, km: 404},
+        "Tivat-Berane": {osnovna: 250, km: 404},
+        "Kotor-Mojkovac": {osnovna: 208, km: 336},
+        "Tivat-Mojkovac": {osnovna: 208, km: 336},
+        "Kotor-Kolašin": {osnovna: 208, km: 336},
+        "Tivat-Kolašin": {osnovna: 208, km: 336},
+        "Kotor-Pljevlja": {osnovna: 316, km: 510},
+        "Tivat-Pljevlja": {osnovna: 316, km: 510},
+        "Kotor-Plav": {osnovna: 296, km: 478},
+        "Tivat-Plav": {osnovna: 296, km: 478},
+        "Kotor-Rožaje": {osnovna: 291, km: 470},
+        "Tivat-Rožaje": {osnovna: 291, km: 470},
+        "Kotor-Andrijevica": {osnovna: 266, km: 429},
+        "Tivat-Andrijevica": {osnovna: 266, km: 429},
+
+        // BUDVA
+        "Budva-Bijelo Polje": {osnovna: 216, km: 348},
+        "Budva-Berane": {osnovna: 216, km: 348},
+        "Budva-Mojkovac": {osnovna: 181, km: 292},
+        "Budva-Kolašin": {osnovna: 181, km: 292},
+        "Budva-Pljevlja": {osnovna: 289, km: 466},
+        "Budva-Plav": {osnovna: 269, km: 434},
+        "Budva-Rožaje": {osnovna: 263, km: 424},
+        "Budva-Andrijevica": {osnovna: 237, km: 383},
+        "Budva-Nikšić": {osnovna: 239, km: 385},
+
+        // BAR
+        "Bar-Bijelo Polje": {osnovna: 200, km: 322},
+        "Bar-Berane": {osnovna: 200, km: 322},
+        "Bar-Mojkovac": {osnovna: 165, km: 266},
+        "Bar-Kolašin": {osnovna: 165, km: 266},
+        "Bar-Pljevlja": {osnovna: 272, km: 438},
+        "Bar-Plav": {osnovna: 252, km: 406},
+        "Bar-Rožaje": {osnovna: 246, km: 397},
+        "Bar-Andrijevica": {osnovna: 221, km: 357},
+
+        // ULCINJ
+        "Ulcinj-Bijelo Polje": {osnovna: 231, km: 372},
+        "Ulcinj-Berane": {osnovna: 231, km: 372},
+        "Ulcinj-Mojkovac": {osnovna: 196, km: 316},
+        "Ulcinj-Kolašin": {osnovna: 196, km: 316},
+        "Ulcinj-Pljevlja": {osnovna: 304, km: 490},
+        "Ulcinj-Plav": {osnovna: 283, km: 457},
+        "Ulcinj-Rožaje": {osnovna: 278, km: 449},
+        "Ulcinj-Andrijevica": {osnovna: 253, km: 408},
+
+        // TUZI
+        "Tuzi-Bijelo Polje": {osnovna: 145, km: 234},
+        "Tuzi-Berane": {osnovna: 145, km: 234},
+        "Tuzi-Mojkovac": {osnovna: 110, km: 178},
+        "Tuzi-Kolašin": {osnovna: 110, km: 178},
+        "Tuzi-Pljevlja": {osnovna: 217, km: 350},
+        "Tuzi-Plav": {osnovna: 197, km: 317},
+        "Tuzi-Rožaje": {osnovna: 192, km: 309},
+        "Tuzi-Andrijevica": {osnovna: 166, km: 268},
+
+        // PLAV
+        "Plav-Podgorica": {osnovna: 188, km: 303},
+        "Plav-Bijelo Polje": {osnovna: 131, km: 212},
+        "Plav-Berane": {osnovna: 119, km: 192},
+        "Plav-Mojkovac": {osnovna: 119, km: 192},
+        "Plav-Kolašin": {osnovna: 119, km: 192},
+        "Plav-Pljevlja": {osnovna: 203, km: 327},
+        "Plav-Nikšić": {osnovna: 255, km: 411},
+        "Plav-Cetinje": {osnovna: 235, km: 379},
+        "Plav-Herceg Novi": {osnovna: 368, km: 593},
+        "Plav-Kotor": {osnovna: 296, km: 478},
+        "Plav-Tivat": {osnovna: 296, km: 478},
+        "Plav-Budva": {osnovna: 269, km: 434},
+        "Plav-Bar": {osnovna: 252, km: 406},
+        "Plav-Ulcinj": {osnovna: 283, km: 457},
+        "Plav-Tuzi": {osnovna: 197, km: 317},
+
+        // ROŽAJE
+        "Rožaje-Podgorica": {osnovna: 182, km: 294},
+        "Rožaje-Bijelo Polje": {osnovna: 113, km: 182},
+        "Rožaje-Mojkovac": {osnovna: 109, km: 176},
+        "Rožaje-Kolašin": {osnovna: 109, km: 176},
+        "Rožaje-Pljevlja": {osnovna: 193, km: 311},
+        "Rožaje-Nikšić": {osnovna: 245, km: 395},
+        "Rožaje-Cetinje": {osnovna: 229, km: 369},
+        "Rožaje-Herceg Novi": {osnovna: 357, km: 575},
+        "Rožaje-Kotor": {osnovna: 291, km: 470},
+        "Rožaje-Tivat": {osnovna: 291, km: 470},
+        "Rožaje-Budva": {osnovna: 263, km: 424},
+        "Rožaje-Bar": {osnovna: 246, km: 397},
+        "Rožaje-Ulcinj": {osnovna: 278, km: 449},
+        "Rožaje-Tuzi": {osnovna: 192, km: 309},
+
+        // ANDRIJEVICA
+        "Andrijevica-Podgorica": {osnovna: 157, km: 254},
+        "Andrijevica-Bijelo Polje": {osnovna: 92, km: 148},
+        "Andrijevica-Mojkovac": {osnovna: 83, km: 135},
+        "Andrijevica-Kolašin": {osnovna: 84, km: 135},
+        "Andrijevica-Pljevlja": {osnovna: 172, km: 277},
+        "Andrijevica-Nikšić": {osnovna: 219, km: 354},
+        "Andrijevica-Cetinje": {osnovna: 203, km: 328},
+        "Andrijevica-Herceg Novi": {osnovna: 331, km: 534},
+        "Andrijevica-Kotor": {osnovna: 266, km: 429},
+        "Andrijevica-Tivat": {osnovna: 266, km: 429},
+        "Andrijevica-Budva": {osnovna: 237, km: 383},
+        "Andrijevica-Bar": {osnovna: 221, km: 357},
+        "Andrijevica-Ulcinj": {osnovna: 253, km: 408},
+        "Andrijevica-Tuzi": {osnovna: 166, km: 268}
+    };
+
+
+    function popuniGradoveInd() {
+        const f = document.getElementById('from');
+        const t = document.getElementById('to');
+        if(!f || !t) return;
+        let options = '<option value="" disabled selected>Izaberi grad...</option>';
+        gradoviInd.forEach(g => options += `<option value="${g}">${g}</option>`);
+        f.innerHTML = options;
+        t.innerHTML = options;
+    }
+
+    function izracunajInd() {
+        const a = document.getElementById('from').value;
+        const b = document.getElementById('to').value;
+        const rez = document.getElementById('indRezultat');
+        const btn = document.getElementById('btnNastaviInd');
+
+        const p1 = parseFloat(localStorage.getItem('tjd_d1')) || 10;
+        const p2 = parseFloat(localStorage.getItem('tjd_d2')) || 15;
+        const p3 = parseFloat(localStorage.getItem('tjd_d3')) || 20;
+        
+// --- Marketing dodatak ---
+    const aktivanMarketing = localStorage.getItem('tjd_akcija_status') === 'true';
+    const tekstMarketing = localStorage.getItem('tjd_akcija_tekst') || "";
+    // -------------------------
+
+        if(!a || !b) return;
+        if(a === b) {
+            rez.innerHTML = "<p style='color:var(--siva)'>Polazište i odredište ne mogu biti isti.</p>";
+            btn.style.display = "none";
+            return;
+        }
+
+        const ruta = cjenovnikInd[`${a}-${b}`] || cjenovnikInd[`${b}-${a}`];
+
+        if(ruta) {
+            let popust = 0;
+            if(ruta.km >= 200 && ruta.km < 300) popust = p1;
+            else if(ruta.km >= 300 && ruta.km < 400) popust = p2;
+            else if(ruta.km >= 400) popust = p3;
+
+            let finalna = Math.round(ruta.osnovna * (1 - popust/100));
+
+            rez.innerHTML = `
+                <div style="background:#f8fafc; padding:15px; border-radius:12px; border-left:6px solid var(--primarna); text-align:left;">
+                    <span style="color:var(--siva); font-size:0.8rem;">OSNOVNA CIJENA: ${ruta.osnovna} € </span><br>
+                    <span id="prikazanaCijena" style="font-size:1.8rem; font-weight:800; color:var(--primarna);">${finalna} €</span>
+                    ${popust > 0 ? `<span style="float:right; background:red; color:white; padding:4px 8px; border-radius:5px; font-size:0.8rem;">POPUST ${popust}%</span>` : ''}
+       
+ ${(aktivanMarketing && popust > 0) ? `
+                    <div style="margin-top:10px; font-size:0.85rem; color:#d9534f; font-weight:bold; display:flex; align-items:center; gap:5px;">
+                        <span>🔥</span> ${tekstMarketing}
+                    </div>` : ''}
+                
+                </div>`;
+            btn.style.display = "block";
+        } else {
+            rez.innerHTML = "<p style='color:red; font-weight:bold;'>Trenutno ne radimo ovu relaciju.</p>";
+            btn.style.display = "none";
+        }
+    }
+
+    function otvoriFormuPodataka() {
+        const forma = document.getElementById('formaPodataka');
+        const gradOd = document.getElementById('from').value;
+        const gradDo = document.getElementById('to').value;
+        forma.style.display = 'block';
+        forma.innerHTML = `
+            <div style="background:white; padding:20px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05); margin-top:20px; border:1px solid #e0e0e0;">
+                <div style="background:#f1f8f1; padding:10px; border-radius:10px; margin-bottom:20px; text-align:center;">
+                    <h4 style="margin:0; color:var(--primarna);">🚛 KOMBI VOZILO: VW CRAFTER 2015 l2h2</h4>
+                    <p style="margin:5px 0; font-size:0.85rem;">Max nosivost: 1200kg | Zapremina: 10m³</p>
+                </div>
+                <h4 style="border-bottom:2px solid #eee; padding-bottom:5px;">DETALJI ROBE</h4>
+                
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+    <div style="flex:1;">
+        <label style="font-size:0.8rem; font-weight:bold;">PLANIRANI DATUM UTOVARA:</label>
+        <div style="position: relative;">
+            <input type="date" id="planiraniDatum" style="width:100%; padding:10px; padding-right:40px; border-radius:8px; border:1px solid #ccc; box-sizing: border-box;">
+            <span style="position: absolute; right: 35px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+        </div>
+    </div>
+
+    <div style="flex:1;">
+        <label style="font-size:0.8rem; font-weight:bold;">PREVOZ PLAĆA:</label>
+        <div style="position: relative;">
+            <select id="koPlaca" style="width:100%; padding:10px; padding-right:25px; border-radius:8px; border:1px solid #ccc; box-sizing: border-box; background-color: white;">
+                <option value="Pošiljalac">Pošiljalac</option>
+                <option value="Primalac">Primalac</option>
+            </select>
+            <span style="position: absolute; right: 25px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+        </div>
+    </div>
+</div>
+
+                       <label style="font-size:0.8rem; font-weight:bold;">OPIS ROBE:</label>
+                       <div style="position: relative; margin-bottom: 10px;">
+                       <textarea id="opisRobe" placeholder="Npr. Namještaj, palete, bijela tehnika..." 
+                       style="width:100%; height:60px; padding:10px; padding-right:25px; border-radius:8px; border:1px solid #ccc; display: block; font-family: sans-serif; resize: none;"></textarea>
+                       <span style="position: absolute; right: 10px; top: 10px; color: red; font-weight: bold; pointer-events: none;">*</span>
+                </div>
+
+                <label style="font-size:0.8rem; font-weight:bold;">TEŽINA (kg):</label>
+                <div style="position: relative; margin-bottom: 20px;">
+                <input type="number" id="tezinaRobe" placeholder="Max 1200" 
+                 style="width:100%; padding:10px; padding-right:30px; border-radius:8px; border:1px solid #ccc; box-sizing: border-box; display: block;">
+                 <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                 </div>
+                <div style="margin-bottom:20px; background:#fcfcfc; padding:10px; border-radius:10px; border:1px solid #eee;">
+                          <h4 style="margin-top:0; color:var(--sekundarna); border-bottom:1px solid #ddd;">POŠILJALAC (UTOVAR)</h4>          
+                          <div style="position: relative; margin-bottom: 10px;">
+                          <input type="text" id="posIme" placeholder="Ime i prezime / Firma" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                          <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                          </div>
+
+                          <input type="text" id="posPib" placeholder="PIB (opciono za firme)" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-bottom:10px;">
+                          <div style="position: relative; margin-bottom: 10px;">
+                          <input type="text" id="posAdresa" placeholder="Tačna adresa utovara" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                          <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                          </div>
+
+                          <input type="text" id="posGrad" value="${gradOd}" readonly style="width:100%; padding:10px; border-radius:8px; border:1px solid #eee; background:#f5f5f5; margin-bottom:10px; color:#555;">
+                          <div style="position: relative;">
+                          <input type="tel" id="posTel" placeholder="Telefon" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                          <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                          </div>
+                  </div>
+
+                <div style="background: #e7f5ff; padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #b3d7ff; display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="istiPrimalac" onchange="kopirajPodatke()" style="width: 20px; height: 20px; cursor: pointer;">
+                    <label for="istiPrimalac" style="font-size: 0.9rem; font-weight: bold; cursor: pointer; color: #0056b3;">Primalac je isto lice/firma kao pošiljalac</label>
+                    </div>
+                
+		<div style="background:#fcfcfc; padding:10px; border-radius:10px; border:1px solid #eee;">
+                          <h4 style="margin-top:0; color:var(--sekundarna); border-bottom:1px solid #ddd;">PRIMALAC (ISTOVAR)</h4>
+                          <div style="position: relative; margin-bottom: 10px;">
+                          <input type="text" id="priIme" placeholder="Ime i prezime / Firma" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                          <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                          </div>
+
+                          <input type="text" id="priPib" placeholder="PIB (opciono za firme)" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-bottom:10px;">
+                          <div style="position: relative; margin-bottom: 10px;">
+                          <input type="text" id="priAdresa" placeholder="Tačna adresa istovara" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                          <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                          </div>
+
+                          <input type="text" id="priGrad" value="${gradDo}" readonly style="width:100%; padding:10px; border-radius:8px; border:1px solid #eee; background:#f5f5f5; margin-bottom:10px; color:#555;">
+                          <div style="position: relative;">
+                          <input type="tel" id="priTel" placeholder="Telefon" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                          <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                          </div>
+                   </div>
+
+                <div style="margin-top:20px; border:1px solid #ddd; border-radius:10px; background:#f9f9f9; padding:10px;">
+    <div style="height: 100px; overflow-y: scroll; font-size: 0.8rem; color: #666; padding: 10px; background: white; border: 1px solid #eee; border-radius: 5px; line-height: 1.4; text-align: left;">
+        <strong>USLOVI POSLOVANJA TJD COMPANY:</strong><br>
+        1. Korišćenjem ovog sajta, korisnik je saglasan sa uslovima TJD COMPANY DOO.<br>
+        2. Cijene su informativne prirode zasnovane na unijetim podacima.<br>
+        3. <strong>PAKOVANJE:</strong> Prevoznik ne odgovara za oštećenja nastala usljed neadekvatnog ili lošeg pakovanja robe.<br>
+        4. <strong>VIŠA SILA:</strong> Prevoznik se oslobađa odgovornosti za kašnjenja uzrokovana višom silom (vremenske nepogode, udesi, zatvoreni putevi).<br>
+        5. <strong>ČEKANJE:</strong> U cijenu je uračunato do 30 min zadržavanja na utovaru/istovaru. Višak se dodatno naplaćuje.<br>
+        6. Prevoznik zadržava pravo na odbijanje robe van gabarita (1200kg max).<br>
+        7. Korisnik garantuje da je vlasnik robe ili ovlašćeni pošiljalac.<br>
+        8. Reklamacije se uvažavaju isključivo prilikom primopredaje robe na licu mjesta.<br>
+        9. Lični podaci se koriste isključivo za potrebe realizacije transporta.<br>
+        10. Za sve sporove nadležan je sud u Podgorici.
+    </div>
+    
+    <div style="display:flex; align-items:center; gap:10px; padding-top:12px;">
+        <input type="checkbox" id="checkUslovi" onchange="document.getElementById('btnFinalnoSlanje').style.display = this.checked ? 'block' : 'none'" style="width:24px; height:24px; cursor:pointer;">
+        <label for="checkUslovi" style="font-size:0.95rem; cursor:pointer; font-weight:bold; color:#2c3e50;">Potvrđujem da prihvatam gore navedene uslove i prihvatam Politiku privatnosti.</label>
+    </div>
+</div>
+
+                <button id="btnFinalnoSlanje" onclick="posaljiUpit()" style="display:none; width:100%; background:var(--primarna); color:white; border:none; padding:18px; border-radius:12px; font-weight:bold; margin-top:20px; cursor:pointer;">POŠALJI ZAHTJEV</button>
+            </div>`;
+        forma.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function posaljiUpit() {
+    // 1. Validacija
+    const obaveznaPolja = ['posIme', 'posAdresa', 'posTel', 'priIme', 'priAdresa', 'priTel', 'planiraniDatum', 'opisRobe', 'tezinaRobe'];
+    for (let id of obaveznaPolja) {
+        let polje = document.getElementById(id);
+        if (!polje || !polje.value.trim()) {
+            alert("Molimo Vas popunite sva obavezna polja označena zvjezdicom.");
+            if(polje) polje.focus();
+            return;
+        }
+    }
+
+    const btn = document.getElementById('btnFinalnoSlanje');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.innerText = "SLANJE...";
+
+    // 2. Generisanje podataka
+    const tjdID = "TJD-" + Math.floor(1000 + Math.random() * 9000);
+    const datumDanas = new Date().toLocaleDateString('sr-RS');
+
+    let siroviPlanDatum = document.getElementById('planiraniDatum').value;
+    let d = new Date(siroviPlanDatum);
+    let formatiranPlanDatum = d.getDate() + ". " + (d.getMonth() + 1) + ". " + d.getFullYear() + ".";
+
+    const podaci = {
+        "id": tjdID,
+        "datum": datumDanas,
+        "planiraniDatum": formatiranPlanDatum,
+        "koPlaca": document.getElementById('koPlaca').value,
+        "ruta": document.getElementById('posGrad').value + " → " + document.getElementById('priGrad').value,
+        "opis": document.getElementById('opisRobe').value,
+        "tezina": document.getElementById('tezinaRobe').value,
+        "posIme": document.getElementById('posIme').value,
+        "posPib": document.getElementById('posPib').value || "/",
+        "posAdresa": document.getElementById('posAdresa').value,
+        "posGrad": document.getElementById('posGrad').value,
+        "posTel": document.getElementById('posTel').value,
+        "priIme": document.getElementById('priIme').value,
+        "priPib": document.getElementById('priPib').value || "/",
+        "priAdresa": document.getElementById('priAdresa').value,
+        "priGrad": document.getElementById('priGrad').value,
+        "priTel": document.getElementById('priTel').value,
+        "cijena": document.getElementById('prikazanaCijena') ? document.getElementById('prikazanaCijena').innerText : (window.odabranaCijena || "0 €"),
+        "status": "NA ČEKANJU"
+    };
+
+    try {
+        // Šalje na podrazumevani list (Individualni)
+        await fetch(scriptURL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify(podaci) 
+        });
+        alert(`Uspješno! Broj zahtjeva: ${tjdID}`);
+        location.reload(); 
+    } catch (e) {
+        alert("Greška pri konekciji.");
+        btn.disabled = false;
+        btn.innerText = "POŠALJI ZAHTJEV";
+    }
+}
+
+    
+
+    // 2. IZMJENA: Glavna funkcija (sa servera)
+    async function renderujIstoriju(tip = 'INDIVIDUALNI', filter = 'SVE', searchId = '') {
+    const kontejner = document.getElementById('istorijaZahtjeva');
+    if (!kontejner) return;
+
+    kontejner.innerHTML = `<p style='text-align:center;'>Učitavanje statusa za ${tip} prevoz...</p>`;
+
+    try {
+        // DODATO: ?tip= osigurava da povlačimo samo podatke za tu sekciju
+        const res = await fetch(scriptURL + "?tip=" + tip);
+        const podaci = await res.json();
+
+        if (!podaci || podaci.length === 0) {
+            kontejner.innerHTML = `<p style='text-align:center; padding:20px;'>Nema pronađenih zahtjeva za ${tip} prevoz.</p>`;
+            return;
+        }
+
+        // --- ZAJEDNIČKI DIO: PRETRAGA PO ID-u (Proslijeđen 'tip') ---
+        let searchHtml = `
+            <div style="margin-bottom:20px; display:flex; gap:10px; justify-content:center;">
+                <input type="text" id="inputSearch" placeholder="Unesi broj (npr. TJD-1234)" style="padding:10px; border-radius:8px; border:1px solid #ccc; width:200px;">
+                <button onclick="renderujIstoriju('${tip}', 'SVE', document.getElementById('inputSearch').value.toUpperCase())" style="padding:10px; background:var(--sekundarna); color:white; border:none; border-radius:8px; cursor:pointer;">Pronađi moj status</button>
+            </div>`;
+
+        // --- ADMIN FILTERI (Proslijeđen 'tip' u svaki klik) ---
+        let filterHtml = "";
+        if (adminModus) {
+            filterHtml = `
+            <div style="margin-bottom:15px; display:flex; flex-wrap:wrap; gap:5px; justify-content:center;">
+                <button onclick="renderujIstoriju('${tip}', 'SVE')" style="padding:8px; border-radius:5px; border:1px solid #ccc; background:${filter==='SVE'?'#333':'white'}; color:${filter==='SVE'?'white':'black'}">Sve</button>
+                <button onclick="renderujIstoriju('${tip}', 'NA ČEKANJU')" style="padding:8px; border-radius:5px; background:${filter==='NA ČEKANJU'?'#f1c40f':'#eee'}">⏳ Čekanje</button>
+                <button onclick="renderujIstoriju('${tip}', 'PRIHVAĆENO')" style="padding:8px; border-radius:5px; background:${filter==='PRIHVAĆENO'?'#28a745':'#eee'}; color:${filter==='PRIHVAĆENO'?'white':'black'}">🚀 Prihvaćeno</button>
+                <button onclick="renderujIstoriju('${tip}', 'REALIZOVANO')" style="padding:8px; border-radius:5px; background:${filter==='REALIZOVANO'?'#007bff':'#eee'}; color:${filter==='REALIZOVANO'?'white':'black'}">🏁 Realizovano</button>
+                <button onclick="renderujIstoriju('${tip}', 'ODBIJENO')" style="padding:8px; border-radius:5px; background:${filter==='ODBIJENO'?'#dc3545':'#eee'}; color:${filter==='ODBIJENO'?'white':'black'}">❌ Odbijeno</button>
+            </div>`;
+        }
+
+        let naslov = searchId ? `REZULTAT PRETRAGE ZA: ${searchId}` : (adminModus ? `ADMIN PANEL ${tip} (${filter})` : `POSLJEDNJIH 6 ZAHTJEVA (${tip})`);
+        
+        let html = `
+            <div style="background:white; padding:20px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05); margin-top:30px;">
+                <h3 style="color:var(--tamna); border-bottom:2px solid #eee; padding-bottom:10px; font-size:1rem; text-align:center;">${naslov}</h3>
+                ${searchHtml}
+                ${filterHtml}
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+                        <tr style="background:#f8f9fa; text-align:left;">
+                            <th style="padding:10px; border-bottom:2px solid #eee;">ID / DATUM</th>
+                            <th style="padding:10px; border-bottom:2px solid #eee;">RUTA</th>
+                            <th style="padding:10px; border-bottom:2px solid #eee;">STATUS</th>
+                            ${adminModus ? '<th style="padding:10px; border-bottom:2px solid #eee;">AKCIJE</th>' : ''}
+                        </tr>`;
+
+        // --- LOGIKA SORTIRANJA ---
+        let filtriraniPodaci = [...podaci];
+        if (adminModus && filter === 'PRIHVAĆENO') {
+            // Podrška za različite nazive polja (z.planiranidatum ili z["Planirani Datum"])
+            filtriraniPodaci.sort((a, b) => {
+                let dA = new Date(a.planiranidatum || a["Planirani Datum"]);
+                let dB = new Date(b.planiranidatum || b["Planirani Datum"]);
+                return dA - dB;
+            });
+        } else {
+            filtriraniPodaci.reverse();
+        }
+
+        // --- FILTRIRANJE ---
+        if (searchId) {
+            filtriraniPodaci = filtriraniPodaci.filter(z => (z.id || z["ID Zahtjeva"]) === searchId);
+        } else if (adminModus) {
+            if (filter !== 'SVE') filtriraniPodaci = filtriraniPodaci.filter(z => (z.status || z.STATUS || "NA ČEKANJU") === filter);
+        } else {
+            filtriraniPodaci = filtriraniPodaci.slice(0, 6);
+        }
+
+        filtriraniPodaci.forEach(z => {
+            // POPRAVKA DATUMA ZA PRIKAZ
+            let siroviDatum = z.planiranidatum || z["Planirani Datum"] || '/';
+            let cistDatumZaTabelu = siroviDatum;
+            if (siroviDatum.toString().includes("T") || siroviDatum.toString().includes("-")) {
+                let d = new Date(siroviDatum);
+                if(!isNaN(d)) cistDatumZaTabelu = d.getDate() + ". " + (d.getMonth() + 1) + ". " + d.getFullYear() + ".";
+            }
+
+            let trenutniStatus = z.status || z.STATUS || "NA ČEKANJU";
+            let trenutniId = z.id || z["ID Zahtjeva"];
+            let trenutnaRuta = z.ruta || z.Ruta || "/";
+
+            let boja = "#6c757d";
+            if(trenutniStatus === "NA ČEKANJU") boja = "#f1c40f";
+            if(trenutniStatus === "PRIHVAĆENO") boja = "#28a745";
+            if(trenutniStatus === "REALIZOVANO") boja = "#007bff";
+            if(trenutniStatus === "ODBIJENO") boja = "#dc3545";
+            
+            const stringPodaci = JSON.stringify(z).replace(/'/g, "&apos;");
+
+            html += `
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:10px;">
+                        <strong>${trenutniId}</strong><br>
+                        <span style="font-size:0.75rem; color:#666;">${cistDatumZaTabelu}</span>
+                    </td>
+                    <td style="padding:10px;">${trenutnaRuta}</td>
+                    <td style="padding:10px;"><span style="background:${boja}; color:white; padding:4px 8px; border-radius:5px; font-weight:bold; font-size:0.7rem;">${trenutniStatus}</span></td>
+                    ${adminModus ? `
+                    <td style="padding:10px; white-space:nowrap;">
+                        <button onclick="promijeniStatus('${trenutniId}', 'PRIHVAĆENO', '${tip}')" title="Prihvati" style="border:none; background:none; cursor:pointer; font-size:1.1rem;">✅</button>
+                        <button onclick="promijeniStatus('${trenutniId}', 'REALIZOVANO', '${tip}')" title="Realizuj" style="border:none; background:none; cursor:pointer; font-size:1.1rem;">🏁</button>
+                        <button onclick="promijeniStatus('${trenutniId}', 'ODBIJENO', '${tip}')" title="Odbij" style="border:none; background:none; cursor:pointer; font-size:1.1rem;">❌</button>
+                        <button onclick='generisiTovarniList(${stringPodaci})' title="Štampaj" style="border:none; background:none; cursor:pointer; font-size:1.1rem; margin-left:5px;">🖨️</button>
+                    </td>` : ''}
+                </tr>`;
+        });
+        kontejner.innerHTML = html + "</table></div></div>";
+    } catch(e) {
+        kontejner.innerHTML = "<p style='color:red; text-align:center;'>Greška pri učitavanju statusa.</p>";
+        console.error(e);
+    }
+}
+
+
+
+
+    // 3. IZMJENA: Lokalna funkcija (rezerva)
+    function renderujLokalnuIstoriju() {
+        const kontejner = document.getElementById('istorijaZahtjeva');
+        const podaci = JSON.parse(localStorage.getItem('tjd_zahtjevi') || "[]");
+        
+        if (!kontejner || podaci.length === 0) return;
+
+        let html = `
+            <div style="background:white; padding:20px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05); margin-top:30px;">
+                <h3 style="color:var(--tamna); border-bottom:2px solid #eee; padding-bottom:10px; font-size:1rem;">📋 VAŠI POSLATU ZAHTJEVI</h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+                        <tr style="background:#f8f9fa; text-align:left;">
+                            <th style="padding:10px; border-bottom:2px solid #eee;">BROJ</th>
+                            <th style="padding:10px; border-bottom:2px solid #eee;">RUTA</th>
+                            <th style="padding:10px; border-bottom:2px solid #eee;">STATUS</th>
+                        </tr>`;
+
+        podaci.forEach(z => {
+            html += `
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:10px; font-weight:bold;">${z.id}</td>
+                    <td style="padding:10px;">${z.ruta}</td>
+                    <td style="padding:10px;">
+                        <span style="background:#6c757d; color:white; padding:4px 8px; border-radius:5px; font-weight:bold;">POSLATO</span>
+                    </td>
+                </tr>`;
+        });
+        kontejner.innerHTML = html + "</table></div></div>";
+    }
+
+    async function promijeniStatus(id, noviStatus, tip = 'INDIVIDUALNI') {
+    if (!confirm(`Da li ste sigurni da želite promijeniti status u ${noviStatus}?`)) return;
+
+    try {
+        // Dodajemo ?tip= u URL čak i za POST zahtjev
+        const urlSaTipom = scriptURL + "?tip=" + tip;
+        
+        await fetch(urlSaTipom, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({
+                akcija: "updateStatus",
+                id: id,
+                noviStatus: noviStatus,
+                tip: tip // Šaljemo i unutar body-ja za svaki slučaj
+            })
+        });
+
+        alert("Status ažuriran!");
+        renderujIstoriju(tip); // Osvježava listu na kojoj se nalaziš
+    } catch (e) {
+        alert("Greška pri ažuriranju statusa.");
+    }
+}
+
+
+    // ADMIN I OSTALO
+    let klikovi = 0;
+    function aktivirajAdmina() {
+    klikovi++;
+    if (klikovi === 3) { 
+        let pass = prompt("TJD ADMIN - Šifra:");
+        if (pass === "tjd2026") { 
+            adminModus = true; // Postavljamo status na true
+            alert("ADMIN MOD AKTIVIRAN!");
+            
+            // Ako je korisnik već u sekciji individualni, odmah prikaži panel
+            const panel = document.getElementById('adminOkvir');
+            if(panel) panel.style.display = 'block';
+            
+            // Osvježi tabelu da se pojave dugmići za potvrdu
+            renderujIstoriju();
+        }
+        klikovi = 0;
+    }
+    setTimeout(() => { klikovi = 0; }, 2000);
+}
+
+    function sacuvajPopuste() {
+        localStorage.setItem('tjd_d1', document.getElementById('disc1').value);
+        localStorage.setItem('tjd_d2', document.getElementById('disc2').value);
+        localStorage.setItem('tjd_d3', document.getElementById('disc3').value);
+        alert("Popusti sačuvani!");
+        location.reload();
+    }
+    
+    function otvoriUslove() { document.getElementById('usloviModal').style.display = 'block'; }
+    function zatvoriUslove() { document.getElementById('usloviModal').style.display = 'none'; }
+
+// FUNKCIJA KOJA POPRAVLJA ŠTAMPU NA MOBILNOM
+function pokreniSmartStampu() {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const sadrzaj = document.getElementById('tovarniListPrint').innerHTML;
+
+    if (isMobile) {
+        // Otvaramo novi prozor jer mobilni browseri često blokiraju print na trenutnoj stranici
+        const prozor = window.open('', '_blank');
+        prozor.document.write('<html><head><title>TJD Tovarni List</title>');
+        // Dodajemo stilove da bi PDF izgledao kao na ekranu
+        prozor.document.write('<style>body{font-family:sans-serif;padding:20px; color:black;} .no-print{display:none;} .tovarni-list-okvir{border:1px solid #eee; padding:20px;} .tovarni-red{display:flex; justify-content:space-between; margin-bottom:15px;} .tovarni-sekcija{width:48%; border:1px solid #ccc; padding:10px; font-size:0.9rem;}</style>');
+        prozor.document.write('</head><body>');
+        prozor.document.write(sadrzaj);
+        prozor.document.write('</body></html>');
+        prozor.document.close();
+
+        // Čekamo trenutak da se slike i stilovi učitaju pa aktiviramo štampu
+        setTimeout(() => {
+            prozor.print();
+        }, 500);
+    } else {
+        window.print();
+    }
+}
+
+// FUNKCIJA ZA BRZO SLANJE PODATAKA NA EMAIL
+function posaljiEmailomTekst(id, ruta, cijena) {
+    const mail = prompt("Unesite email adresu na koju šaljete:");
+    if (!mail) return;
+
+    const subjekt = encodeURIComponent(`TJD Tovarni List - ${id}`);
+    const tijelo = encodeURIComponent(`
+TOVARNI LIST: ${id}
+RELACIJA: ${ruta}
+CIJENA PREVOZA: ${cijena}
+
+Kompletne detalje i PDF dokument možete preuzeti štampanjem iz Admin Panela.
+Hvala na povjerenju!
+TJD COMPANY DOO
+    `);
+
+    window.location.href = `mailto:${mail}?subject=${subjekt}&body=${tijelo}`;
+}
+
+    
+    
+function generisiTovarniList(z) {
+    let printDiv = document.getElementById('tovarniListPrint');
+    if (!printDiv) {
+        printDiv = document.createElement('div');
+        printDiv.id = 'tovarniListPrint';
+        document.body.appendChild(printDiv);
+    }
+
+// OVO JE DODATAK: Isprazni prethodni sadržaj prije generisanja novog
+    printDiv.innerHTML = "";
+
+    // --- TVOJA POPRAVKA ZA DATUM UTOVARA ---
+let cistDatumUtovara = z.planiranidatum || '/';
+if (cistDatumUtovara.includes("T")) {
+    let d = new Date(cistDatumUtovara);
+    cistDatumUtovara = d.getDate() + ". " + (d.getMonth() + 1) + ". " + d.getFullYear() + ".";
+}
+
+// --- NOVA POPRAVKA ZA DATUM UPITA ---
+let cistDatumUpita = z.datumupita || '/';
+if (cistDatumUpita.includes("T")) {
+    let d = new Date(cistDatumUpita);
+    cistDatumUpita = d.getDate() + ". " + (d.getMonth() + 1) + ". " + d.getFullYear() + ".";
+}
+
+    // Kreiranje sadržaja tovarnog lista - SVE OSTALO ISTO
+    printDiv.innerHTML = `
+        <div class="tovarni-list-okvir">
+            <div style="text-align:center; border-bottom:2px solid black; padding-bottom:10px; margin-bottom:20px;">
+                <h1 style="margin:0; color:#28a745;">TJD COMPANY DOO</h1>
+                <p style="margin:5px 0;">Logistika i Transport Crna Gora | tjd.dostava@gmail.com,  tel.: 068 812 077</p>
+                <h2 style="margin-top:15px; background:#f4f4f4; padding:10px; border:1px solid #333;">TOVARNI LIST br: ${z.id}</h2>
+            </div>
+
+            <div class="tovarni-red">
+                <div class="tovarni-sekcija">
+                    <strong>POŠILJALAC (UTOVAR):</strong><br>
+                    Ime/Firma: ${z.posime || '/'}<br>
+                    PIB: ${z.pospib || '/'}<br>
+                    Adresa: ${z.posadresa || '/'}<br>
+                    Grad: ${z.posgrad || '/'}<br>
+                    Tel: ${z.postel || '/'}
+                </div>
+                <div class="tovarni-sekcija">
+                    <strong>PRIMALAC (ISTOVAR):</strong><br>
+                    Ime/Firma: ${z.priime || '/'}<br>
+                    PIB: ${z.pripib || '/'}<br>
+                    Adresa: ${z.priadresa || '/'}<br>
+                    Grad: ${z.prigrad || '/'}<br>
+                    Tel: ${z.pritel || '/'}
+                </div>
+            </div>
+
+            <div style="border:1px solid #333; padding:15px; margin-bottom:20px; background:#fafafa;">
+                <p><strong>RELACIJA:</strong> ${z.ruta}</p>
+                <p><strong>OPIS ROBE:</strong> ${z.opis || '/'}</p>
+                <p><strong>TEŽINA:</strong> ${z.tezina ? z.tezina + ' kg' : '/'}</p>
+                <p><strong>DATUM ZAHTJEVA:</strong> ${cistDatumUpita || '/'}</p>
+                <p><strong>DATUM UTOVARA:</strong> ${cistDatumUtovara}</p>
+                <p><strong>PREVOZ PLAĆA:</strong> ${z.koplaca || '/'}</p>
+
+                <h3 style="text-align:right; margin:0;">UKUPNA CIJENA: ${z.cijena || '/'}€</h3>
+            </div>
+
+            <div style="margin-top:60px; display:flex; justify-content:space-between; text-align:center; font-size:0.8rem;">
+                <div style="width:30%;">
+                    <div style="border-top:1px solid black; padding-top:5px;">M.P. Potpis prevoznika</div>
+                </div>
+                <div style="width:30%;">
+                    <div style="border-top:1px solid black; padding-top:5px;">Potpis pošiljaoca (Utovar)</div>
+                </div>
+                <div style="width:30%;">
+                    <div style="border-top:1px solid black; padding-top:5px;">Potpis primaoca (Istovar)</div>
+                </div>
+            </div>
+            
+            <p style="margin-top:40px; font-size:0.7rem; text-align:center; color:#444; border-top:1px dashed #ccc; padding-top:10px;">
+                Hvala na povjerenju! Vaša TJD COMPANY DOO - Profesionalna logistika širom Crne Gore.
+            </p>
+
+                        <div class="no-print" style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button onclick="pokreniSmartStampu()" style="flex:1; min-width:140px; padding:15px; background:#28a745; color:white; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">🖨️ ŠTAMPAJ / PDF</button>
+                <button onclick="posaljiEmailomTekst('${z.id}', '${z.ruta}', '${z.cijena}')" style="flex:1; min-width:140px; padding:15px; background:#007bff; color:white; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">📧 POŠALJI NA EMAIL</button>
+                <button onclick="document.getElementById('tovarniListPrint').innerHTML=''" style="width:100%; padding:10px; background:#6c757d; color:white; font-weight:bold; border:none; border-radius:8px; cursor:pointer; margin-top:5px;">ZATVORI</button>
+            </div>
+
+        </div>
+    `;
+
+    printDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
+function kopirajPodatke() {
+    const check = document.getElementById('istiPrimalac');
+    
+    // Polja pošiljaoca
+    const posIme = document.getElementById('posIme').value;
+    const posPib = document.getElementById('posPib').value;
+    const posTel = document.getElementById('posTel').value;
+
+    // Polja primaoca
+    const priIme = document.getElementById('priIme');
+    const priPib = document.getElementById('priPib');
+    const priTel = document.getElementById('priTel');
+
+    if (check.checked) {
+        // Kopiramo vrijednosti
+        priIme.value = posIme;
+        priPib.value = posPib;
+        priTel.value = posTel;
+        
+        // Vizuelno obavještenje da su polja popunjena (opciono)
+        priIme.style.backgroundColor = "#f0fff0";
+        priPib.style.backgroundColor = "#f0fff0";
+        priTel.style.backgroundColor = "#f0fff0";
+    } else {
+        // Ako odznači, brišemo i vraćamo na staro
+        priIme.value = "";
+        priPib.value = "";
+        priTel.value = "";
+        priIme.style.backgroundColor = "white";
+        priPib.style.backgroundColor = "white";
+        priTel.style.backgroundColor = "white";
+    }
+}
+
+function sacuvajMarketing() {
+    localStorage.setItem('tjd_akcija_tekst', document.getElementById('akcijaTekst').value);
+    localStorage.setItem('tjd_akcija_status', document.getElementById('akcijaAktivna').checked);
+    alert("Marketing poruka ažurirana!");
+    location.reload();
+}
+
+
+async function azurirajBrojac() {
+    // 1. Pronađi element na ekranu gdje piše broj
+    const prikaz = document.getElementById('brojPosjetaPrikaz');
+    
+    try {
+        // 2. "Gađaj" Google skriptu (doGet funkciju)
+        const res = await fetch(scriptURL);
+        const data = await res.json();
+        
+        // 3. Ako je Google vratio broj, upiši ga umjesto onih tačkica "..."
+        if (data && data.ukupno !== undefined) {
+            if (prikaz) {
+                prikaz.innerText = data.ukupno;
+            }
+        }
+    } catch (e) {
+        console.error("Greška sa brojačem:", e);
+        if (prikaz) prikaz.innerText = "N/A";
+    }
+}
+    
+function otvoriPolitiku() {
+    document.getElementById('politikaModal').style.display = 'block';
+}
+
+function zatvoriPolitiku() {
+    document.getElementById('politikaModal').style.display = 'none';
+}
+
+// Dodatak da se modal zatvori ako klikneš bilo gdje van njega
+window.onclick = function(event) {
+    const modalUslovi = document.getElementById('usloviModal');
+    const modalPolitika = document.getElementById('politikaModal');
+    if (event.target == modalUslovi) { modalUslovi.style.display = 'none'; }
+    if (event.target == modalPolitika) { modalPolitika.style.display = 'none'; }
+}
+
+
+// Čim se završi učitavanje stranice, pokreni brojač
+window.onload = function() {
+    azurirajBrojac();
+};
+
+
+async function osvjeziPopunjenostCraftera() {
+    try {
+        const res = await fetch(scriptURL + "?tip=ZBIRNI");
+        const podaci = await res.json();
+        
+        // 1. Dohvatamo tvoju rutu iz Admin panela (npr. "Mojkovac, Bijelo Polje, Berane, Kolašin, Podgorica")
+        const rutaAdmin = localStorage.getItem('tjd_zbirni_naziv_rute') || "";
+        const gradoviRute = rutaAdmin.split(',').map(g => g.trim().toLowerCase());
+
+        const MAX_KG = 1200;
+        const MAX_EUR = 180;
+
+        let sumaKGSjPg = 0, sumaEurosSjPg = 0; // Smjer A (Niz listu)
+        let sumaKGPgSj = 0, sumaEurosPgSj = 0; // Smjer B (Uz listu)
+
+        podaci.forEach(z => {
+            const status = (z.status || "").toUpperCase();
+            if (status === "PRIHVAĆENO" || status === "REALIZOVANO") {
+                
+                let kg = parseFloat(z.tezina) || 0;
+                let sirovaCijena = (z.cijena || "0").toString();
+                let cijena = parseFloat(sirovaCijena.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+                
+                // 2. Rastavljamo rutu pošiljke iz baze
+                let rutaBaza = (z.ruta || "").toLowerCase();
+                let djelovi = rutaBaza.split(/[-→–]/).map(g => g.trim());
+                
+                if (djelovi.length >= 2) {
+                    let polaziste = djelovi[0];
+                    let odrediste = djelovi[djelovi.length - 1];
+
+                    // 3. Pronalazimo poziciju gradova u tvojoj Admin listi
+                    let indexPolazista = gradoviRute.indexOf(polaziste);
+                    let indexOdredista = gradoviRute.indexOf(odrediste);
+
+                    // Provjeravamo da li oba grada postoje u tvojoj definisanoj ruti
+                    if (indexPolazista !== -1 && indexOdredista !== -1) {
+                        if (indexPolazista < indexOdredista) {
+                            // Ako je polazište prije odredišta (npr. Berane(2) -> Podgorica(4))
+                            sumaKGSjPg += kg;
+                            sumaEurosSjPg += cijena;
+                        } else {
+                            // Ako je polazište poslije odredišta (npr. Podgorica(4) -> Bijelo Polje(1))
+                            sumaKGPgSj += kg;
+                            sumaEurosPgSj += cijena;
+                        }
+                    } else {
+                        // Opciono: Ako grad nije na listi, možeš ga svrstati po starom sistemu (Jug/Sjever)
+                        const jug = ["podgorica", "tivat", "budva", "herceg novi", "kotor", "bar", "ulcinj"];
+                        if (jug.some(g => odrediste.includes(g))) {
+                            sumaKGSjPg += kg;
+                            sumaEurosSjPg += cijena;
+                        } else {
+                            sumaKGPgSj += kg;
+                            sumaEurosPgSj += cijena;
+                        }
+                    }
+                }
+            }
+        });
+
+        // 4. Izračunavanje finalnih procenata
+        let finalniSjPg = Math.max((sumaKGSjPg / MAX_KG) * 100, (sumaEurosSjPg / MAX_EUR) * 100);
+        let finalniPgSj = Math.max((sumaKGPgSj / MAX_KG) * 100, (sumaEurosPgSj / MAX_EUR) * 100);
+
+        // 5. Prikaz na sajtu
+        const smjerA = localStorage.getItem('tjd_zbirni_smjer_a') || "Smjer A";
+        const smjerB = localStorage.getItem('tjd_zbirni_smjer_b') || "Smjer B";
+
+        prikaziNaSajtu('barSjPg', 'tekstSjPg', finalniSjPg, sumaKGSjPg, sumaEurosSjPg, smjerA);
+        prikaziNaSajtu('barPgSj', 'tekstPgSj', finalniPgSj, sumaKGPgSj, sumaEurosPgSj, smjerB);
+
+    } catch (e) {
+        console.error("Greška pri osvježavanju popunjenosti:", e);
+    }
+}
+
+
+async function stampajPlanRute(smjer) {
+    try {
+        // 1. Povuci sve podatke iz baze
+        const res = await fetch(scriptURL + "?tip=ZBIRNI");
+        const sviPodaci = await res.json();
+        
+        // 2. Pozovi funkciju za generisanje izvještaja (koju smo gore dogovorili)
+        generisiPlanRute(sviPodaci, smjer);
+    } catch (e) {
+        alert("Greška pri učitavanju podataka za štampu.");
+    }
+}
+
+
+// Funkcija koja crta barove i ispisuje naslov
+function prikaziNaSajtu(barId, tekstId, procenat, kg, pare, naslov) {
+    const bar = document.getElementById(barId);
+    const tekst = document.getElementById(tekstId);
+    if (!bar || !tekst) return;
+
+    let p = Math.min(Math.round(procenat), 100);
+    bar.style.width = p + "%";
+    
+    tekst.innerHTML = `
+        <div style="margin-bottom: 5px; font-weight: bold; font-size: 0.85rem; color: var(--tamna);"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:bold;">Popunjenost: ${p}%</span>            
+        </div>
+    `;
+
+    if (p > 90) bar.style.background = "#dc3545";
+    else if (p > 60) bar.style.background = "#f39c12";
+    else bar.style.background = "#28a745";
+}
+
+
+
+
+function birajZbirni(cijena, paket) {
+    // 1. Pronalazimo tvoj div sa dugmetom "ZAKAŽI PREVOZ" i prikazujemo ga
+    const dugmeOkvir = document.getElementById('zbFinalno');
+    if (dugmeOkvir) {
+        dugmeOkvir.style.display = 'block';
+    }
+
+    // 2. (Opciono) Označavamo dugme koje je kliknuto da korisnik vidi šta je izabrao
+    document.querySelectorAll('.btn-zbir-cijena').forEach(btn => {
+        btn.style.borderColor = '#eee'; // Vraća ostala na sivo
+        btn.style.background = 'white';
+    });
+    
+    // Aktuelno dugme bojimo u plavo/zeleno
+    event.currentTarget.style.borderColor = 'var(--sekundarna)';
+    event.currentTarget.style.background = '#e7f3ff';
+
+    // 3. Pamtimo podatke globalno da ih forma može pročitati
+    window.odabranaCijena = cijena;
+    window.odabraniPaket = paket;
+} 
+
+
+function otvoriFormuZbirni() {
+    const forma = document.getElementById('formaPodataka'); // tvoj postojeći div
+    const gradOd = document.getElementById('zbPolaziste').value;
+    const gradDo = document.getElementById('zbOdrediste').value;
+    
+    forma.style.display = 'block';
+    
+    // TVOJ ORIGINALNI KOD IZ INDIVIDUALNOG, PRILAGOĐEN ZA ZBIRNI
+    forma.innerHTML = `
+        <div style="background:white; padding:20px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05); margin-top:20px; border:1px solid #e0e0e0;">
+            <div style="background:#f1f8f1; padding:10px; border-radius:10px; margin-bottom:20px; text-align:center;">
+                <h4 style="margin:0; color:var(--primarna);">🚛 ZBIRNI PREVOZ: VW CRAFTER 2015 l2h2</h4>
+                <p style="margin:5px 0; font-size:0.85rem;">Paket: ${window.odabraniPaket || 'Po dogovoru'} | Cijena: ${window.odabranaCijena || '0'} €</p>
+            </div>
+            <h4 style="border-bottom:2px solid #eee; padding-bottom:5px;">DETALJI ROBE</h4>
+            
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+               <div style="flex:1;">
+    <label style="font-size:0.8rem; font-weight:bold;">PLANIRANI DATUM UTOVARA:</label>
+    <div style="position: relative;">
+        <input type="text" id="planiraniDatum" 
+        value="${document.getElementById('fiksniDatumRute') ? document.getElementById('fiksniDatumRute').innerText : ''}" 
+        readonly 
+        style="width:100%; padding:10px; border-radius:8px; border:1px solid #eee; background:#f5f5f5; color:#555; font-weight:bold; box-sizing: border-box;">
+    </div>
+</div>
+
+
+                <div style="flex:1;">
+                    <label style="font-size:0.8rem; font-weight:bold;">PREVOZ PLAĆA:</label>
+                    <div style="position: relative;">
+                        <select id="koPlaca" style="width:100%; padding:10px; padding-right:25px; border-radius:8px; border:1px solid #ccc; box-sizing: border-box; background-color: white;">
+                            <option value="Pošiljalac">Pošiljalac</option>
+                            <option value="Primalac">Primalac</option>
+                        </select>
+                        <span style="position: absolute; right: 25px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                    </div>
+                </div>
+            </div>
+
+            <label style="font-size:0.8rem; font-weight:bold;">OPIS ROBE:</label>
+            <div style="position: relative; margin-bottom: 10px;">
+                <textarea id="opisRobe" placeholder="Npr. Namještaj, gume, bijela tehnika..." 
+                style="width:100%; height:60px; padding:10px; padding-right:25px; border-radius:8px; border:1px solid #ccc; display: block; font-family: sans-serif; resize: none;"></textarea>
+                <span style="position: absolute; right: 10px; top: 10px; color: red; font-weight: bold; pointer-events: none;">*</span>
+            </div>
+
+            <label style="font-size:0.8rem; font-weight:bold;">TEŽINA (kg):</label>
+            <div style="position: relative; margin-bottom: 20px;">
+                <input type="number" id="tezinaRobe" placeholder="Okvirna težina" 
+                 style="width:100%; padding:10px; padding-right:30px; border-radius:8px; border:1px solid #ccc; box-sizing: border-box; display: block;">
+                 <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+            </div>
+
+            <div style="margin-bottom:20px; background:#fcfcfc; padding:10px; border-radius:10px; border:1px solid #eee;">
+                <h4 style="margin-top:0; color:var(--sekundarna); border-bottom:1px solid #ddd;">POŠILJALAC (UTOVAR)</h4>
+                <div style="position: relative; margin-bottom: 10px;">
+                    <input type="text" id="posIme" placeholder="Ime i prezime / Firma" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                </div>
+                <input type="text" id="posPib" placeholder="PIB (opciono za firme)" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-bottom:10px;">
+                <div style="position: relative; margin-bottom: 10px;">
+                    <input type="text" id="posAdresa" placeholder="Tačna adresa utovara" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                </div>
+                <input type="text" id="posGrad" value="${gradOd}" readonly style="width:100%; padding:10px; border-radius:8px; border:1px solid #eee; background:#f5f5f5; margin-bottom:10px; color:#555;">
+                <div style="position: relative;">
+                    <input type="tel" id="posTel" placeholder="Telefon" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                </div>
+            </div>
+
+            <div style="background: #e7f5ff; padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #b3d7ff; display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="istiPrimalac" onchange="kopirajPodatke()" style="width: 20px; height: 20px; cursor: pointer;">
+                <label for="istiPrimalac" style="font-size: 0.9rem; font-weight: bold; cursor: pointer; color: #0056b3;">Primalac je isto lice/firma kao pošiljalac</label>
+            </div>
+            
+            <div style="background:#fcfcfc; padding:10px; border-radius:10px; border:1px solid #eee;">
+                <h4 style="margin-top:0; color:var(--sekundarna); border-bottom:1px solid #ddd;">PRIMALAC (ISTOVAR)</h4>
+                <div style="position: relative; margin-bottom: 10px;">
+                    <input type="text" id="priIme" placeholder="Ime i prezime / Firma" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                </div>
+                <input type="text" id="priPib" placeholder="PIB (opciono za firme)" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-bottom:10px;">
+                <div style="position: relative; margin-bottom: 10px;">
+                    <input type="text" id="priAdresa" placeholder="Tačna adresa istovara" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                    <span style="absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                </div>
+                <input type="text" id="priGrad" value="${gradDo}" readonly style="width:100%; padding:10px; border-radius:8px; border:1px solid #eee; background:#f5f5f5; margin-bottom:10px; color:#555;">
+                <div style="position: relative;">
+                    <input type="tel" id="priTel" placeholder="Telefon" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc; display: block;">
+                    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: red; font-weight: bold; pointer-events: none;">*</span>
+                </div>
+            </div>
+
+            <div style="margin-top:20px; border:1px solid #ddd; border-radius:10px; background:#f9f9f9; padding:10px;">
+                <div style="height: 100px; overflow-y: scroll; font-size: 0.8rem; color: #666; padding: 10px; background: white; border: 1px solid #eee; border-radius: 5px; line-height: 1.4; text-align: left;">
+                    <strong>USLOVI POSLOVANJA TJD COMPANY:</strong><br>
+                    ... 1. Korišćenjem ovog sajta... (tvoj tekst ovdje)
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; padding-top:12px;">
+                    <input type="checkbox" id="checkUslovi" onchange="document.getElementById('btnFinalnoSlanjeZbirni').style.display = this.checked ? 'block' : 'none'" style="width:24px; height:24px; cursor:pointer;">
+                    <label for="checkUslovi" style="font-size:0.95rem; cursor:pointer; font-weight:bold; color:#2c3e50;">Potvrđujem uslove i privatnost.</label>
+                </div>
+            </div>
+
+            <button id="btnFinalnoSlanjeZbirni" onclick="posaljiUpitZbirni()" style="display:none; width:100%; background:var(--primarna); color:white; border:none; padding:18px; border-radius:12px; font-weight:bold; margin-top:20px; cursor:pointer;">POŠALJI ZBIRNI ZAHTJEV 🚀</button>
+        </div>`;
+    forma.scrollIntoView({ behavior: 'smooth' });
+}
+
+async function posaljiUpitZbirni() {
+    const obaveznaPolja = ['posIme', 'posAdresa', 'posTel', 'priIme', 'priAdresa', 'priTel', 'planiraniDatum', 'opisRobe', 'tezinaRobe'];
+    for (let id of obaveznaPolja) {
+        let polje = document.getElementById(id);
+        if (!polje || !polje.value.trim()) {
+            alert("Molimo Vas popunite obavezna polja.");
+            if(polje) polje.focus();
+            return;
+        }
+    }
+
+    const btn = document.getElementById('btnFinalnoSlanjeZbirni');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = "SLANJE...";
+    }
+
+    const tjdID = "TJD-Z-" + Math.floor(1000 + Math.random() * 9000);
+    let siroviPlanDatum = document.getElementById('planiraniDatum').value;
+    let d = new Date(siroviPlanDatum);
+    let formatiranPlanDatum = d.getDate() + ". " + (d.getMonth() + 1) + ". " + d.getFullYear() + ".";
+
+    const podaci = {
+        "id": tjdID,
+        "planiraniDatum": document.getElementById('planiraniDatum').value,
+        "koPlaca": document.getElementById('koPlaca').value,
+        "ruta": document.getElementById('posGrad').value + " → " + document.getElementById('priGrad').value,
+        "opis": document.getElementById('opisRobe').value,
+        "tezina": document.getElementById('tezinaRobe').value,
+        "posIme": document.getElementById('posIme').value,
+        "posPib": document.getElementById('posPib').value || "/",
+        "posAdresa": document.getElementById('posAdresa').value,
+        "posGrad": document.getElementById('posGrad').value,
+        "posTel": document.getElementById('posTel').value,
+        "priIme": document.getElementById('priIme').value,
+        "priPib": document.getElementById('priPib').value || "/",
+        "priAdresa": document.getElementById('priAdresa').value,
+        "priGrad": document.getElementById('priGrad').value,
+        "priTel": document.getElementById('priTel').value,
+        "cijena": (window.odabranaCijena || "0") + " €",
+        "status": "NA ČEKANJU"
+    };
+
+    try {
+        await fetch(scriptURL + "?tip=ZBIRNI", {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(podaci)
+        });
+        alert("Zbirni zahtjev poslat! ID: " + tjdID);
+        location.reload();
+    } catch (e) {
+        alert("Greška.");
+        if(btn) { btn.disabled = false; btn.innerText = "POŠALJI ZBIRNI ZAHTJEV 🚀"; }
+    }
+}
+
+function sacuvajAdminZbirni() {
+    // Uzimanje vrijednosti iz inputa koje si definisao u innerHTML-u
+    const noviNaziv = document.getElementById('admZbirniNaziv').value;
+    const noviDatum = document.getElementById('admZbirniDatum').value;
+    const noviSmjerA = document.getElementById('admSmjerA').value;
+    const noviSmjerB = document.getElementById('admSmjerB').value;
+
+    // Spašavanje u localStorage
+    localStorage.setItem('tjd_zbirni_naziv_rute', noviNaziv);
+    localStorage.setItem('tjd_zbirni_datum', noviDatum);
+    localStorage.setItem('tjd_zbirni_smjer_a', noviSmjerA);
+    localStorage.setItem('tjd_zbirni_smjer_b', noviSmjerB);
+
+    alert("✅ Podaci za rutu su uspješno ažurirani!");
+    
+    // Osvježavanje stranice da se vide promjene
+    location.reload();
+}
+
+ 
+function generisiPlanRute(sviPodaci, izabraniSmjer) {
+    const rutaAdmin = localStorage.getItem('tjd_zbirni_naziv_rute') || "";
+    let gradovi = rutaAdmin.split(',').map(g => g.trim());
+
+    // Ako je Smjer B, okreni redoslijed gradova
+    if (izabraniSmjer === 'B') {
+        gradovi = [...gradovi].reverse();
+    }
+
+    let html = `
+        <style>
+            body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+            .grad-blok { border: 2px solid #000; margin-bottom: 20px; page-break-inside: avoid; }
+            .grad-naslov { background: #000; color: #fff; padding: 10px; font-size: 1.4rem; font-weight: bold; }
+            .sekcija { padding: 10px; border-bottom: 1px solid #ccc; }
+            .utovar { color: #1a7f37; font-weight: bold; }
+            .istovar { color: #d73a49; font-weight: bold; }
+            .stavka { margin: 8px 0; padding-bottom: 5px; border-bottom: 1px dashed #eee; font-size: 1.1rem; }
+            .info { color: #555; font-size: 0.9rem; }
+        </style>
+        <h1 style="text-align:center;">TJD COMPANY - PLAN RUTE (${izabraniSmjer === 'A' ? 'SJEVER-JUG' : 'JUG-SJEVER'})</h1>
+        <p style="text-align:center;">Datum: ${localStorage.getItem('tjd_zbirni_datum') || ""}</p>
+    `;
+
+    gradovi.forEach(grad => {
+        const gradL = grad.toLowerCase();
+        
+        // Filtriraj utovare i istovare za ovaj konkretan grad
+        const utovari = sviPodaci.filter(z => 
+            (z.status === "PRIHVAĆENO") && 
+            (z.ruta || "").toLowerCase().split(/[-→–]/)[0].trim() === gradL
+        );
+
+        const istovari = sviPodaci.filter(z => 
+            (z.status === "PRIHVAĆENO") && 
+            (z.ruta || "").toLowerCase().split(/[-→–]/).pop().trim() === gradL
+        );
+
+        if (utovari.length > 0 || istovari.length > 0) {
+            html += `<div class="grad-blok">
+                <div class="grad-naslov">📍 ${grad.toUpperCase()}</div>`;
+            
+            if (utovari.length > 0) {
+                html += `<div class="sekcija"><div class="utovar">⬆️ UTOVARI U OVOM GRADU:</div>`;
+                utovari.forEach(u => {
+                    html += `<div class="stavka">📦 ${u.imePrezime} (${u.tezina}kg) <br> <span class="info">Krajnje odredište: ${u.ruta.split(/[-→–]/).pop()} | Tel: ${u.tel || ""}</span></div>`;
+                });
+                html += `</div>`;
+            }
+
+            if (istovari.length > 0) {
+                html += `<div class="sekcija"><div class="istovar">⬇️ ISTOVARI U OVOM GRADU:</div>`;
+                istovari.forEach(i => {
+                    html += `<div class="stavka">✅ ISTOVARITI ZA: ${i.imePrezime} <br> <span class="info">Primanje od: ${i.ruta.split(/[-→–]/)[0]} | Tel primaoca: ${i.priTel || ""}</span></div>`;
+                });
+                html += `</div>`;
+            }
+            html += `</div>`;
+        }
+    });
+
+    const win = window.open('', '_blank');
+    win.document.write(html);
+    win.document.close();
+    win.print();
+}
+  
+</script>
+</body>
+</html>
