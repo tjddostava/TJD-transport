@@ -1866,7 +1866,7 @@ async function pokreniRutiranje() {
                         // Provjera za UTOVAR
                         if (sviGradoviCheck || gradOd === mojIzabraniGrad) {
                             privremeniNiz.push({
-                                adresa: `(UT ${z.id}) ${z.posadresa.trim()}, ${z.posgrad.trim()}`,
+                                adresa: ` ${z.posadresa.trim()}, ${z.posgrad.trim()}`,
                                 grad: gradOd,
                                 index: gradoviZaSort.indexOf(gradOd)
                             });
@@ -1874,7 +1874,7 @@ async function pokreniRutiranje() {
                         // Provjera za ISTOVAR
                         if (sviGradoviCheck || gradDo === mojIzabraniGrad) {
                             privremeniNiz.push({
-                                adresa: `(IS ${z.id}) ${z.priadresa.trim()}, ${z.prigrad.trim()}`,
+                                adresa: ` ${z.priadresa.trim()}, ${z.prigrad.trim()}`,
                                 grad: gradDo,
                                 index: gradoviZaSort.indexOf(gradDo)
                             });
