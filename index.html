@@ -12,7 +12,7 @@
 
         /* HEADER */
         header { background: white; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); sticky; top: 0; z-index: 100; }
-        .logo h1 { margin: 0; color: var(--primarna); letter-spacing: 1px; cursor: pointer; }
+        .logo h1 { margin: 0; color: var(--primarna); letter-spacing: 1px;}
 
         /* O NAMA SEKCIJA */
         .hero { padding: 30px 20px; text-align: center; background: white; border-bottom: 1px solid #eee; }
@@ -61,7 +61,7 @@
 <body>
 
 <header>
-    <div class="logo" onclick="aktivirajAdmina()">
+    <div class="logo">
         <h1>TJD COMPANY DOO</h1>
     </div>
 </header>
@@ -162,10 +162,13 @@
 </div>
 
 <script>
-    // URL tvoje Google Script aplikacije
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbweTvskmj1DIrkko-I7ZjqNUl41Vkcc2Zq5UCcHz1jIb_sWydr9YWyR-vakyplCKEBUkw/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyFHleXKeviNqI3W-J6QFsPqh28qKDolH1em-pLCG6ihsMWpyX8rw7NDs6MkD0_YXWv/exec';
+    
+    
 
-    let adminModus = false; // Ovo pamti da li si ulogovan
+
+    
+
 
     // 1. GLAVNA FUNKCIJA ZA PROMENU SEKCIJA
     function prikaziSekciju(tip) {
@@ -175,42 +178,8 @@
     
     if(tip === 'individualni') {
         document.getElementById('btnInd').classList.add('active');
-        
-        const s1 = localStorage.getItem('tjd_d1') || "10";
-        const s2 = localStorage.getItem('tjd_d2') || "15";
-        const s3 = localStorage.getItem('tjd_d3') || "20";
-
         sadrzaj.innerHTML = `
-            <div id="adminOkvir" style="display:${adminModus ? 'block' : 'none'}; background:#fef9e7; padding:15px; border-radius:15px; border:1px dashed #f1c40f; margin-bottom:20px; font-size:0.85rem;">
-                <strong>⚙️ POSTAVKE POPUSTA (%)</strong><br>
-                <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-                    <span>200-300km: <input type="number" id="disc1" value="${s1}" style="width:45px;">%</span>
-                    <span>300-400km: <input type="number" id="disc2" value="${s2}" style="width:45px;">%</span>
-                    <span>400km+: <input type="number" id="disc3" value="${s3}" style="width:45px;">%</span>
-                    <button onclick="sacuvajPopuste()" style="background:var(--primarna); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">SAČUVAJ</button>
-                </div>
-        
-// Dodaj ovo unutar adminOkvir-a
-<div style="margin-top:15px; padding-top:10px; border-top:1px solid #ddd;">
-    <strong>📢 MARKETING (AKCIJA)</strong><br>
-    <input type="text" id="akcijaTekst" placeholder="Npr. AKCIJA DO KRAJA MJESECA!" style="width:70%; padding:5px; margin-top:5px;">
-    <label><input type="checkbox" id="akcijaAktivna"> Prikaži</label>
-    <button onclick="sacuvajMarketing()" style="background:var(--sekundarna); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; margin-left:10px;">OSVJEŽI</button>
-</div>
-        
-        
-// Dodaj ovo na sam vrh adminOkvir-a (unutar innerHTML-a)
-<div style="background:white; padding:10px; border-radius:10px; margin-bottom:15px; border:1px solid #f1c40f; text-align:center;">
-    <span style="font-size:0.9rem; color:var(--siva);">UKUPNO POSJETA SAJTU:</span><br>
-    <strong style="font-size:1.5rem; color:var(--tamna);" id="brojPosjetaPrikaz">...</strong>
-</div>
-        
-        
-             
-        
-            </div>
-
-            <div style="background:white; padding:20px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+             <div style="background:white; padding:20px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
                 <h3 style="text-align:center; margin-top:0; color:var(--primarna);">KALKULATOR      ZA INDIVIDUALNI PREVOZ</h3>
 
                 <div style="background:#eef2f7; padding:12px; border-radius:10px; margin-bottom:15px; font-size:0.9rem; border-left:4px solid var(--sekundarna);">
@@ -251,75 +220,7 @@ const statusA = localStorage.getItem('tjd_status_a') !== 'false';
         const listaGradova = nazivRute.split(',').map(g => g.trim());
 
         sadrzaj.innerHTML = `
-        <div id="adminOkvirZbirni" style="display:${adminModus ? 'block' : 'none'}; background:#fef9e7; padding:15px; border-radius:15px; border:1px dashed #f1c40f; margin-bottom:20px;">
-            <strong style="font-size:0.8rem;">⚙️ ADMIN: PODEŠAVANJE RUTE</strong>
-            <div style="margin-top:10px; display:grid; grid-template-columns: 1fr; gap:8px;">
-                <div>
-                    <label style="font-size:0.7rem;">GRADOVI NA RUTI (odvojite zarezom):</label>
-                    <input type="text" id="admZbirniNaziv" value="${nazivRute}" style="width:100%; padding:5px;">
-                    <small style="font-size:0.6rem; color:#666;">*Sajt će sam napraviti listu gradova od ovoga.</small>
-                </div>
-                <div style="display:flex; gap:5px;">
-                    <div style="flex:1;">
-                        <label style="font-size:0.7rem;">DATUM:</label>
-                        <input type="text" id="admZbirniDatum" value="${datumRute}" style="width:100%; padding:5px;">
-                    </div>
-                    <div style="flex:1;">
-                        <label style="font-size:0.7rem;">SMJER A:</label>
-                        <input type="text" id="admSmjerA" value="${smjerA}" style="width:100%; padding:5px;">
-                        <div style="margin-top:5px; font-size:0.65rem; display:flex; align-items:center; gap:3px;">
-                            <input type="checkbox" id="chkStatusA" ${statusA ? 'checked' : ''}> Aktivno
-                        </div>
-                    </div>
-                    <div style="flex:1;">
-                        <label style="font-size:0.7rem;">SMJER B:</label>
-                        <input type="text" id="admSmjerB" value="${smjerB}" style="width:100%; padding:5px;">
-                        <div style="margin-top:5px; font-size:0.65rem; display:flex; align-items:center; gap:3px;">
-                            <input type="checkbox" id="chkStatusB" ${statusB ? 'checked' : ''}> Aktivno
-                        </div>
-                    </div>
-                </div>
-            </div>
-                <button onclick="sacuvajAdminZbirni()" style="margin-top:10px; width:100%; padding:10px; background:var(--tamna); color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">AŽURIRAJ CIJELI SAJT</button>
-<div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
-    <button onclick="stampajPlanRute('A')" style="padding:10px; background:#28a745; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; font-size:0.75rem;">🖨️ PLAN: SMJER A</button>
-    <button onclick="stampajPlanRute('B')" style="padding:10px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; font-size:0.75rem;">🖨️ PLAN: SMJER B</button>
-</div>  
-
-<div style="margin-top:15px; background:#fff; padding:10px; border-radius:10px; border:1px solid #ccc;">
-    <strong style="font-size:0.75rem; display:block; margin-bottom:8px;">🗺️ GENERISANJE MAPE</strong>
-    
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-        <div>
-            <label style="font-size:0.65rem;">KRENI IZ:</label>
-            <select id="mapaStartniGrad" style="width:100%; padding:5px; font-size:0.8rem;">
-                ${listaGradova.map(g => `<option value="${g}">${g}</option>`).join('')}
-            </select>
-        </div>
-        <div>
-            <label style="font-size:0.65rem;">SMJER:</label>
-            <select id="mapaSmjer" style="width:100%; padding:5px; font-size:0.8rem;">
-                <option value="A">A (Odlazak)</option>
-                <option value="B">B (Povratak)</option>
-                <option value="ABA">ABA (Kružna tura)</option>
-            </select>
-        </div>
-    </div>
-
-
-
-<div style="margin-top:10px; display:flex; align-items:center; gap:5px; background:#e8f0fe; padding:8px; border-radius:5px; border:1px solid #1a73e8;">
-        <input type="checkbox" id="sviGradoviCheck" style="cursor:pointer; width:18px; height:18px;">
-        <label for="sviGradoviCheck" style="font-size:0.75rem; cursor:pointer; color:#1a73e8; font-weight:bold;"> 
-            🚀 SVI GRADOVI NA RUTI ODJEDNOM
-        </label>
-    </div>
-
-
-    <button onclick="pokreniRutiranje()" style="margin-top:10px; width:100%; padding:10px; background:#1a73e8; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">OTVORI RUTU U MAPAMA</button>
-</div>
-          
-</div>
+        
 
             <div style="background:white; padding:20px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
                 <h3 style="text-align:center; color:var(--sekundarna); margin-bottom:5px;">ZBIRNI PREVOZ (CRAFTER L2H2)</h3>
@@ -649,7 +550,32 @@ const statusA = localStorage.getItem('tjd_status_a') !== 'false';
         t.innerHTML = options;
     }
 
-    function izracunajInd() {
+   
+// Dodali smo 'tipPrevoza' kao prvi parametar
+async function dohvatiPodatke(tipPrevoza = 'INDIVIDUALNI') {
+    // URL koji spaja tvoj scriptURL i tip prevoza (ZBIRNI ili INDIVIDUALNI)
+    // Pošto nema šifre, šaljemo samo tip
+    let finalniUrl = `${scriptURL}?tip=${tipPrevoza}`;
+
+    try {
+        const response = await fetch(finalniUrl);
+        
+        if (!response.ok) {
+            throw new Error("Problem sa mrežom");
+        }
+
+        const data = await response.json();
+        
+        // Vraćamo podatke (ID, Ruta, Status) koje šalje tvoja nova Google skripta
+        return data;
+    } catch (error) {
+        console.error("Greška pri komunikaciji sa serverom:", error);
+        return null;
+    }
+}
+
+
+ function izracunajInd() {
         const a = document.getElementById('from').value;
         const b = document.getElementById('to').value;
         const rez = document.getElementById('indRezultat');
@@ -884,122 +810,118 @@ const statusA = localStorage.getItem('tjd_status_a') !== 'false';
     
 
     // 2. IZMJENA: Glavna funkcija (sa servera)
-    async function renderujIstoriju(tip = 'INDIVIDUALNI', filter = 'SVE', searchId = '') {
+     async function renderujIstoriju(tip = 'INDIVIDUALNI', searchId = '') {
     const kontejner = document.getElementById('istorijaZahtjeva');
     if (!kontejner) return;
 
-    kontejner.innerHTML = `<p style='text-align:center;'>Učitavanje statusa za ${tip} prevoz...</p>`;
+    kontejner.innerHTML = `<p style='text-align:center;'>Učitavanje statusa...</p>`;
 
     try {
-        // DODATO: ?tip= osigurava da povlačimo samo podatke za tu sekciju
-        const res = await fetch(scriptURL + "?tip=" + tip);
-        const podaci = await res.json();
+        // Povlačimo javne podatke (ID, Ruta, Status) - jaSamAdmin je uvek false za klijente
+        const podaci = await dohvatiPodatke(tip, false);
 
         if (!podaci || podaci.length === 0) {
-            kontejner.innerHTML = `<p style='text-align:center; padding:20px;'>Nema pronađenih zahtjeva za ${tip} prevoz.</p>`;
+            kontejner.innerHTML = `<p style='text-align:center; padding:20px;'>Trenutno nema aktivnih zahtjeva.</p>`;
             return;
         }
 
-        // --- ZAJEDNIČKI DIO: PRETRAGA PO ID-u (Proslijeđen 'tip') ---
+        // POLJE ZA PRETRAGU - Da klijent može naći bilo koji broj iz arhive
         let searchHtml = `
             <div style="margin-bottom:20px; display:flex; gap:10px; justify-content:center;">
-                <input type="text" id="inputSearch" placeholder="Unesi broj (npr. TJD-1234)" style="padding:10px; border-radius:8px; border:1px solid #ccc; width:200px;">
-                <button onclick="renderujIstoriju('${tip}', 'SVE', document.getElementById('inputSearch').value.toUpperCase())" style="padding:10px; background:var(--sekundarna); color:white; border:none; border-radius:8px; cursor:pointer;">Pronađi moj status</button>
+                <input type="text" id="inputSearch" placeholder="Unesi broj (npr. TJD-1234)" 
+                       style="padding:10px; border-radius:10px; border:1px solid #ddd; width:200px; outline:none;">
+                <button onclick="renderujIstoriju('${tip}', document.getElementById('inputSearch').value.toUpperCase())" 
+                        style="padding:10px 15px; background:var(--sekundarna); color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">
+                    Pronađi moj status
+                </button>
             </div>`;
 
-        // --- ADMIN FILTERI (Proslijeđen 'tip' u svaki klik) ---
-        let filterHtml = "";
-        if (adminModus) {
-            filterHtml = `
-            <div style="margin-bottom:15px; display:flex; flex-wrap:wrap; gap:5px; justify-content:center;">
-                <button onclick="renderujIstoriju('${tip}', 'SVE')" style="padding:8px; border-radius:5px; border:1px solid #ccc; background:${filter==='SVE'?'#333':'white'}; color:${filter==='SVE'?'white':'black'}">Sve</button>
-                <button onclick="renderujIstoriju('${tip}', 'NA ČEKANJU')" style="padding:8px; border-radius:5px; background:${filter==='NA ČEKANJU'?'#f1c40f':'#eee'}">⏳ Čekanje</button>
-                <button onclick="renderujIstoriju('${tip}', 'PRIHVAĆENO')" style="padding:8px; border-radius:5px; background:${filter==='PRIHVAĆENO'?'#28a745':'#eee'}; color:${filter==='PRIHVAĆENO'?'white':'black'}">🚀 Prihvaćeno</button>
-                <button onclick="renderujIstoriju('${tip}', 'REALIZOVANO')" style="padding:8px; border-radius:5px; background:${filter==='REALIZOVANO'?'#007bff':'#eee'}; color:${filter==='REALIZOVANO'?'white':'black'}">🏁 Realizovano</button>
-                <button onclick="renderujIstoriju('${tip}', 'ODBIJENO')" style="padding:8px; border-radius:5px; background:${filter==='ODBIJENO'?'#dc3545':'#eee'}; color:${filter==='ODBIJENO'?'white':'black'}">❌ Odbijeno</button>
-            </div>`;
-        }
+        let naslov = searchId ? `REZULTAT ZA BROJ: ${searchId}` : `ZADNJIH 6 ZAHTJEVA (${tip})`;
 
-        let naslov = searchId ? `REZULTAT PRETRAGE ZA: ${searchId}` : (adminModus ? `ADMIN PANEL ${tip} (${filter})` : `POSLJEDNJIH 6 ZAHTJEVA (${tip})`);
-        
         let html = `
             <div style="background:white; padding:20px; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05); margin-top:30px;">
                 <h3 style="color:var(--tamna); border-bottom:2px solid #eee; padding-bottom:10px; font-size:1rem; text-align:center;">${naslov}</h3>
                 ${searchHtml}
-                ${filterHtml}
                 <div style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
                         <tr style="background:#f8f9fa; text-align:left;">
                             <th style="padding:10px; border-bottom:2px solid #eee;">ID / DATUM</th>
                             <th style="padding:10px; border-bottom:2px solid #eee;">RUTA</th>
                             <th style="padding:10px; border-bottom:2px solid #eee;">STATUS</th>
-                            ${adminModus ? '<th style="padding:10px; border-bottom:2px solid #eee;">AKCIJE</th>' : ''}
                         </tr>`;
 
-        // --- LOGIKA SORTIRANJA ---
         let filtriraniPodaci = [...podaci];
-        if (adminModus && filter === 'PRIHVAĆENO') {
-            // Podrška za različite nazive polja (z.planiranidatum ili z["Planirani Datum"])
-            filtriraniPodaci.sort((a, b) => {
-                let dA = new Date(a.planiranidatum || a["Planirani Datum"]);
-                let dB = new Date(b.planiranidatum || b["Planirani Datum"]);
-                return dA - dB;
-            });
-        } else {
-            filtriraniPodaci.reverse();
-        }
 
-        // --- FILTRIRANJE ---
         if (searchId) {
-            filtriraniPodaci = filtriraniPodaci.filter(z => (z.id || z["ID Zahtjeva"]) === searchId);
-        } else if (adminModus) {
-            if (filter !== 'SVE') filtriraniPodaci = filtriraniPodaci.filter(z => (z.status || z.STATUS || "NA ČEKANJU") === filter);
+            // Pretraga po čitavoj arhivi
+            filtriraniPodaci = filtriraniPodaci.filter(z => (z.id || z["ID Zahtjeva"]).toString().toUpperCase() === searchId);
+            if (filtriraniPodaci.length === 0) {
+                kontejner.innerHTML = `
+                    <div style="text-align:center; padding:30px; background:white; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+                        <p>Nije pronađen status za broj <strong>${searchId}</strong>.</p>
+                        <button onclick="renderujIstoriju('${tip}')" style="color:var(--sekundarna); border:none; background:none; cursor:pointer; text-decoration:underline;">Nazad na listu</button>
+                    </div>`;
+                return;
+            }
         } else {
-            filtriraniPodaci = filtriraniPodaci.slice(0, 6);
+            // Ako nema pretrage, prikaži samo zadnjih 6
+            filtriraniPodaci = filtriraniPodaci.reverse().slice(0, 6);
         }
 
-        filtriraniPodaci.forEach(z => {
-            // POPRAVKA DATUMA ZA PRIKAZ
-            let siroviDatum = z.planiranidatum || z["Planirani Datum"] || '/';
-            let cistDatumZaTabelu = siroviDatum;
-            if (siroviDatum.toString().includes("T") || siroviDatum.toString().includes("-")) {
-                let d = new Date(siroviDatum);
-                if(!isNaN(d)) cistDatumZaTabelu = d.getDate() + ". " + (d.getMonth() + 1) + ". " + d.getFullYear() + ".";
+  filtriraniPodaci.forEach(z => {
+    let trenutniId = z.id || "/";
+    let trenutnaRuta = z.ruta || "/";
+    let trenutniStatus = z.status || "NA ČEKANJU";
+    
+    // SREĐIVANJE OVAKVOG DATUMA: 2026-02-09T23:00:00.000Z
+    let siroviDatum = z.planiranidatum;
+    let cistDatum = "/";
+
+    if (siroviDatum) {
+        try {
+            let d = new Date(siroviDatum);
+            if (!isNaN(d.getTime())) {
+                // Izvlačimo dan, mjesec i godinu
+                let dan = d.getDate().toString().padStart(2, '0');
+                let mjesec = (d.getMonth() + 1).toString().padStart(2, '0');
+                let godina = d.getFullYear();
+                
+                cistDatum = `${dan}.${mjesec}.${godina}.`;
+            } else {
+                cistDatum = siroviDatum; // Ako nije datum, ispiši tekst
             }
+        } catch (err) {
+            cistDatum = siroviDatum;
+        }
+    }
 
-            let trenutniStatus = z.status || z.STATUS || "NA ČEKANJU";
-            let trenutniId = z.id || z["ID Zahtjeva"];
-            let trenutnaRuta = z.ruta || z.Ruta || "/";
+    // Boje statusa
+    let boja = "#6c757d"; 
+    if(trenutniStatus === "NA ČEKANJU") boja = "#f39c12"; 
+    if(trenutniStatus === "PRIHVAĆENO") boja = "#28a745"; 
+    if(trenutniStatus === "REALIZOVANO") boja = "#007bff"; 
+    if(trenutniStatus === "ODBIJENO") boja = "#dc3545"; 
+    
+    html += `
+        <tr style="border-bottom:1px solid #eee;">
+            <td style="padding:10px;">
+                <strong>${trenutniId}</strong><br>
+                <span style="font-size:0.75rem; color:#888;">${cistDatum}</span>
+            </td>
+            <td style="padding:10px;">${trenutnaRuta}</td>
+            <td style="padding:10px;">
+                <span style="background:${boja}; color:white; padding:4px 8px; border-radius:5px; font-weight:bold; font-size:0.7rem;">
+                    ${trenutniStatus}
+                </span>
+            </td>
+        </tr>`;
+});
 
-            let boja = "#6c757d";
-            if(trenutniStatus === "NA ČEKANJU") boja = "#f1c40f";
-            if(trenutniStatus === "PRIHVAĆENO") boja = "#28a745";
-            if(trenutniStatus === "REALIZOVANO") boja = "#007bff";
-            if(trenutniStatus === "ODBIJENO") boja = "#dc3545";
-            
-            const stringPodaci = JSON.stringify(z).replace(/'/g, "&apos;");
-
-            html += `
-                <tr style="border-bottom:1px solid #eee;">
-                    <td style="padding:10px;">
-                        <strong>${trenutniId}</strong><br>
-                        <span style="font-size:0.75rem; color:#666;">${cistDatumZaTabelu}</span>
-                    </td>
-                    <td style="padding:10px;">${trenutnaRuta}</td>
-                    <td style="padding:10px;"><span style="background:${boja}; color:white; padding:4px 8px; border-radius:5px; font-weight:bold; font-size:0.7rem;">${trenutniStatus}</span></td>
-                    ${adminModus ? `
-                    <td style="padding:10px; white-space:nowrap;">
-                        <button onclick="promijeniStatus('${trenutniId}', 'PRIHVAĆENO', '${tip}')" title="Prihvati" style="border:none; background:none; cursor:pointer; font-size:1.1rem;">✅</button>
-                        <button onclick="promijeniStatus('${trenutniId}', 'REALIZOVANO', '${tip}')" title="Realizuj" style="border:none; background:none; cursor:pointer; font-size:1.1rem;">🏁</button>
-                        <button onclick="promijeniStatus('${trenutniId}', 'ODBIJENO', '${tip}')" title="Odbij" style="border:none; background:none; cursor:pointer; font-size:1.1rem;">❌</button>
-                        <button onclick='generisiTovarniList(${stringPodaci})' title="Štampaj" style="border:none; background:none; cursor:pointer; font-size:1.1rem; margin-left:5px;">🖨️</button>
-                    </td>` : ''}
-                </tr>`;
-        });
         kontejner.innerHTML = html + "</table></div></div>";
+
     } catch(e) {
-        kontejner.innerHTML = "<p style='color:red; text-align:center;'>Greška pri učitavanju statusa.</p>";
         console.error(e);
+        kontejner.innerHTML = `<p style='text-align:center; padding:20px; color:red;'>Greška pri učitavanju podataka.</p>`;
     }
 }
 
@@ -1037,202 +959,8 @@ const statusA = localStorage.getItem('tjd_status_a') !== 'false';
         kontejner.innerHTML = html + "</table></div></div>";
     }
 
-    async function promijeniStatus(id, noviStatus, tip = 'INDIVIDUALNI') {
-    if (!confirm(`Da li ste sigurni da želite promijeniti status u ${noviStatus}?`)) return;
-
-    try {
-        // Dodajemo ?tip= u URL čak i za POST zahtjev
-        const urlSaTipom = scriptURL + "?tip=" + tip;
-        
-        await fetch(urlSaTipom, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify({
-                akcija: "updateStatus",
-                id: id,
-                noviStatus: noviStatus,
-                tip: tip // Šaljemo i unutar body-ja za svaki slučaj
-            })
-        });
-
-        alert("Status ažuriran!");
-        renderujIstoriju(tip); // Osvježava listu na kojoj se nalaziš
-    } catch (e) {
-        alert("Greška pri ažuriranju statusa.");
-    }
-}
-
-
-    // ADMIN I OSTALO
-    let klikovi = 0;
-    function aktivirajAdmina() {
-    klikovi++;
-    if (klikovi === 3) { 
-        let pass = prompt("TJD ADMIN - Šifra:");
-        if (pass === "tjd2026") { 
-            adminModus = true; // Postavljamo status na true
-            alert("ADMIN MOD AKTIVIRAN!");
-            
-            // Ako je korisnik već u sekciji individualni, odmah prikaži panel
-            const panel = document.getElementById('adminOkvir');
-            if(panel) panel.style.display = 'block';
-            
-            // Osvježi tabelu da se pojave dugmići za potvrdu
-            renderujIstoriju();
-        }
-        klikovi = 0;
-    }
-    setTimeout(() => { klikovi = 0; }, 2000);
-}
-
-    function sacuvajPopuste() {
-        localStorage.setItem('tjd_d1', document.getElementById('disc1').value);
-        localStorage.setItem('tjd_d2', document.getElementById('disc2').value);
-        localStorage.setItem('tjd_d3', document.getElementById('disc3').value);
-        alert("Popusti sačuvani!");
-        location.reload();
-    }
-    
-    function otvoriUslove() { document.getElementById('usloviModal').style.display = 'block'; }
-    function zatvoriUslove() { document.getElementById('usloviModal').style.display = 'none'; }
-
-// FUNKCIJA KOJA POPRAVLJA ŠTAMPU NA MOBILNOM
-function pokreniSmartStampu() {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const sadrzaj = document.getElementById('tovarniListPrint').innerHTML;
-
-    if (isMobile) {
-        // Otvaramo novi prozor jer mobilni browseri često blokiraju print na trenutnoj stranici
-        const prozor = window.open('', '_blank');
-        prozor.document.write('<html><head><title>TJD Tovarni List</title>');
-        // Dodajemo stilove da bi PDF izgledao kao na ekranu
-        prozor.document.write('<style>body{font-family:sans-serif;padding:20px; color:black;} .no-print{display:none;} .tovarni-list-okvir{border:1px solid #eee; padding:20px;} .tovarni-red{display:flex; justify-content:space-between; margin-bottom:15px;} .tovarni-sekcija{width:48%; border:1px solid #ccc; padding:10px; font-size:0.9rem;}</style>');
-        prozor.document.write('</head><body>');
-        prozor.document.write(sadrzaj);
-        prozor.document.write('</body></html>');
-        prozor.document.close();
-
-        // Čekamo trenutak da se slike i stilovi učitaju pa aktiviramo štampu
-        setTimeout(() => {
-            prozor.print();
-        }, 500);
-    } else {
-        window.print();
-    }
-}
-
-// FUNKCIJA ZA BRZO SLANJE PODATAKA NA EMAIL
-function posaljiEmailomTekst(id, ruta, cijena) {
-    const mail = prompt("Unesite email adresu na koju šaljete:");
-    if (!mail) return;
-
-    const subjekt = encodeURIComponent(`TJD Tovarni List - ${id}`);
-    const tijelo = encodeURIComponent(`
-TOVARNI LIST: ${id}
-RELACIJA: ${ruta}
-CIJENA PREVOZA: ${cijena}
-
-Kompletne detalje i PDF dokument možete preuzeti štampanjem iz Admin Panela.
-Hvala na povjerenju!
-TJD COMPANY DOO
-    `);
-
-    window.location.href = `mailto:${mail}?subject=${subjekt}&body=${tijelo}`;
-}
-
     
     
-function generisiTovarniList(z) {
-    let printDiv = document.getElementById('tovarniListPrint');
-    if (!printDiv) {
-        printDiv = document.createElement('div');
-        printDiv.id = 'tovarniListPrint';
-        document.body.appendChild(printDiv);
-    }
-
-// OVO JE DODATAK: Isprazni prethodni sadržaj prije generisanja novog
-    printDiv.innerHTML = "";
-
-    // --- TVOJA POPRAVKA ZA DATUM UTOVARA ---
-let cistDatumUtovara = z.planiranidatum || '/';
-if (cistDatumUtovara.includes("T")) {
-    let d = new Date(cistDatumUtovara);
-    cistDatumUtovara = d.getDate() + ". " + (d.getMonth() + 1) + ". " + d.getFullYear() + ".";
-}
-
-// --- NOVA POPRAVKA ZA DATUM UPITA ---
-let cistDatumUpita = z.datumupita || '/';
-if (cistDatumUpita.includes("T")) {
-    let d = new Date(cistDatumUpita);
-    cistDatumUpita = d.getDate() + ". " + (d.getMonth() + 1) + ". " + d.getFullYear() + ".";
-}
-
-    // Kreiranje sadržaja tovarnog lista - SVE OSTALO ISTO
-    printDiv.innerHTML = `
-        <div class="tovarni-list-okvir">
-            <div style="text-align:center; border-bottom:2px solid black; padding-bottom:10px; margin-bottom:20px;">
-                <h1 style="margin:0; color:#28a745;">TJD COMPANY DOO</h1>
-                <p style="margin:5px 0;">Logistika i Transport Crna Gora | tjd.dostava@gmail.com,  tel.: 068 812 077</p>
-                <h2 style="margin-top:15px; background:#f4f4f4; padding:10px; border:1px solid #333;">TOVARNI LIST br: ${z.id}</h2>
-            </div>
-
-            <div class="tovarni-red">
-                <div class="tovarni-sekcija">
-                    <strong>POŠILJALAC (UTOVAR):</strong><br>
-                    Ime/Firma: ${z.posime || '/'}<br>
-                    PIB: ${z.pospib || '/'}<br>
-                    Adresa: ${z.posadresa || '/'}<br>
-                    Grad: ${z.posgrad || '/'}<br>
-                    Tel: ${z.postel || '/'}
-                </div>
-                <div class="tovarni-sekcija">
-                    <strong>PRIMALAC (ISTOVAR):</strong><br>
-                    Ime/Firma: ${z.priime || '/'}<br>
-                    PIB: ${z.pripib || '/'}<br>
-                    Adresa: ${z.priadresa || '/'}<br>
-                    Grad: ${z.prigrad || '/'}<br>
-                    Tel: ${z.pritel || '/'}
-                </div>
-            </div>
-
-            <div style="border:1px solid #333; padding:15px; margin-bottom:20px; background:#fafafa;">
-                <p><strong>RELACIJA:</strong> ${z.ruta}</p>
-                <p><strong>OPIS ROBE:</strong> ${z.opis || '/'}</p>
-                <p><strong>TEŽINA:</strong> ${z.tezina ? z.tezina + ' kg' : '/'}</p>
-                <p><strong>DATUM ZAHTJEVA:</strong> ${cistDatumUpita || '/'}</p>
-                <p><strong>DATUM UTOVARA:</strong> ${cistDatumUtovara}</p>
-                <p><strong>PREVOZ PLAĆA:</strong> ${z.koplaca || '/'}</p>
-
-                <h3 style="text-align:right; margin:0;">UKUPNA CIJENA: ${z.cijena || '/'}€</h3>
-            </div>
-
-            <div style="margin-top:60px; display:flex; justify-content:space-between; text-align:center; font-size:0.8rem;">
-                <div style="width:30%;">
-                    <div style="border-top:1px solid black; padding-top:5px;">M.P. Potpis prevoznika</div>
-                </div>
-                <div style="width:30%;">
-                    <div style="border-top:1px solid black; padding-top:5px;">Potpis pošiljaoca (Utovar)</div>
-                </div>
-                <div style="width:30%;">
-                    <div style="border-top:1px solid black; padding-top:5px;">Potpis primaoca (Istovar)</div>
-                </div>
-            </div>
-            
-            <p style="margin-top:40px; font-size:0.7rem; text-align:center; color:#444; border-top:1px dashed #ccc; padding-top:10px;">
-                Hvala na povjerenju! Vaša TJD COMPANY DOO - Profesionalna logistika širom Crne Gore.
-            </p>
-
-                        <div class="no-print" style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
-                <button onclick="pokreniSmartStampu()" style="flex:1; min-width:140px; padding:15px; background:#28a745; color:white; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">🖨️ ŠTAMPAJ / PDF</button>
-                <button onclick="posaljiEmailomTekst('${z.id}', '${z.ruta}', '${z.cijena}')" style="flex:1; min-width:140px; padding:15px; background:#007bff; color:white; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">📧 POŠALJI NA EMAIL</button>
-                <button onclick="document.getElementById('tovarniListPrint').innerHTML=''" style="width:100%; padding:10px; background:#6c757d; color:white; font-weight:bold; border:none; border-radius:8px; cursor:pointer; margin-top:5px;">ZATVORI</button>
-            </div>
-
-        </div>
-    `;
-
-    printDiv.scrollIntoView({ behavior: 'smooth' });
-}
 
 function kopirajPodatke() {
     const check = document.getElementById('istiPrimalac');
@@ -1268,35 +996,7 @@ function kopirajPodatke() {
     }
 }
 
-function sacuvajMarketing() {
-    localStorage.setItem('tjd_akcija_tekst', document.getElementById('akcijaTekst').value);
-    localStorage.setItem('tjd_akcija_status', document.getElementById('akcijaAktivna').checked);
-    alert("Marketing poruka ažurirana!");
-    location.reload();
-}
 
-
-async function azurirajBrojac() {
-    // 1. Pronađi element na ekranu gdje piše broj
-    const prikaz = document.getElementById('brojPosjetaPrikaz');
-    
-    try {
-        // 2. "Gađaj" Google skriptu (doGet funkciju)
-        const res = await fetch(scriptURL);
-        const data = await res.json();
-        
-        // 3. Ako je Google vratio broj, upiši ga umjesto onih tačkica "..."
-        if (data && data.ukupno !== undefined) {
-            if (prikaz) {
-                prikaz.innerText = data.ukupno;
-            }
-        }
-    } catch (e) {
-        console.error("Greška sa brojačem:", e);
-        if (prikaz) prikaz.innerText = "N/A";
-    }
-}
-    
 function otvoriPolitiku() {
     document.getElementById('politikaModal').style.display = 'block';
 }
@@ -1398,18 +1098,7 @@ async function osvjeziPopunjenostCraftera() {
 }
 
 
-async function stampajPlanRute(smjer) {
-    try {
-        // 1. Povuci sve podatke iz baze
-        const res = await fetch(scriptURL + "?tip=ZBIRNI");
-        const sviPodaci = await res.json();
-        
-        // 2. Pozovi funkciju za generisanje izvještaja (koju smo gore dogovorili)
-        generisiPlanRute(sviPodaci, smjer);
-    } catch (e) {
-        alert("Greška pri učitavanju podataka za štampu.");
-    }
-}
+
 
 
 // Funkcija koja crta barove i ispisuje naslov
@@ -1667,299 +1356,7 @@ function provjeriDostupnostSmjera() {
 
 
 
-function sacuvajAdminZbirni() {
-    // Uzimanje vrijednosti iz inputa
-    const noviNaziv = document.getElementById('admZbirniNaziv').value;
-    const noviDatum = document.getElementById('admZbirniDatum').value;
-    const noviSmjerA = document.getElementById('admSmjerA').value;
-    const noviSmjerB = document.getElementById('admSmjerB').value;
 
-    // Spašavanje u localStorage
-    localStorage.setItem('tjd_zbirni_naziv_rute', noviNaziv);
-    localStorage.setItem('tjd_zbirni_datum', noviDatum);
-    localStorage.setItem('tjd_zbirni_smjer_a', noviSmjerA);
-    localStorage.setItem('tjd_zbirni_smjer_b', noviSmjerB);
-
-    // Dodajemo provjeru: ako postoje checkbox-ovi na ekranu, sačuvaj ih
-    if (document.getElementById('chkStatusA')) {
-        localStorage.setItem('tjd_status_a', document.getElementById('chkStatusA').checked);
-    }
-    if (document.getElementById('chkStatusB')) {
-        localStorage.setItem('tjd_status_b', document.getElementById('chkStatusB').checked);
-    }
-
-    alert("✅ Podaci za rutu su uspješno ažurirani!");
-    
-    // Osvježavanje stranice
-    location.reload();
-}
-
- 
-function generisiPlanRute(sviPodaci, izabraniSmjer) {
-    const rutaAdmin = localStorage.getItem('tjd_zbirni_naziv_rute') || "";
-    const datumRute = localStorage.getItem('tjd_zbirni_datum') || "";
-    let gradoviOriginal = rutaAdmin.split(',').map(g => g.trim());
-    
-    let gradoviZaIspis = (izabraniSmjer === 'B') ? [...gradoviOriginal].reverse() : [...gradoviOriginal];
-
-    let html = `
-        <html>
-        <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Manifest TJD</title>
-            <style>
-                /* TVOJ ORIGINALNI STIL ZA RACUNAR */
-                body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
-                .grad-blok { border: 2px solid #000; margin-bottom: 20px; page-break-inside: avoid; }
-                .grad-naslov { background: #000; color: #fff; padding: 10px; font-size: 1.4rem; font-weight: bold; }
-                .sekcija { padding: 10px; border-bottom: 1px solid #ccc; }
-                .utovar { color: #1a7f37; font-weight: bold; margin-bottom: 5px; }
-                .istovar { color: #d73a49; font-weight: bold; margin-bottom: 5px; }
-                .stavka { 
-                    margin: 8px 0; padding-bottom: 8px; border-bottom: 1px dashed #eee; 
-                    display: flex; justify-content: space-between; align-items: flex-start;
-                }
-                .info { color: #555; font-size: 0.95rem; line-height: 1.4; }
-                .naplata-box { border: 2px solid #000; padding: 8px; background: #f9f9f9; min-width: 140px; text-align: right; }
-                
-                button { 
-                    padding: 10px 20px; background: #1a73e8; color: white; border: none; 
-                    border-radius: 5px; cursor: pointer; font-weight: bold; 
-                }
-
-                @media print { .no-print { display: none; } }
-
-                /* NOVI STIL SAMO ZA TELEFON (Ekran manji od 600px) */
-                @media only screen and (max-width: 600px) {
-                    body { padding: 5px; }
-                    h1 { font-size: 1.6rem; }
-                    h2 { font-size: 1rem; }
-                    
-                    .grad-naslov { font-size: 1.2rem; padding: 12px; }
-                    
-                    .stavka { 
-                        flex-direction: column; /* Na telefonu stavlja jedno ispod drugog */
-                        border-bottom: 1.5px solid #eee;
-                        padding-bottom: 15px;
-                    }
-                    
-                    .info { font-size: 1.1rem; line-height: 1.6; } /* Veci tekst za vozaca */
-                    
-                    .naplata-box { 
-                        width: 100%; 
-                        text-align: center; 
-                        margin-top: 10px; 
-                        background: #fffbe6; /* Lagano zuckasto da skrene paznju */
-                        font-size: 1.2rem;
-                        box-sizing: border-box;
-                    }
-                    
-                    .no-print button {
-                        width: 95%;
-                        padding: 15px;
-                        font-size: 1.2rem;
-                        position: sticky;
-                        bottom: 10px;
-                    }
-                }
-            </style>
-        </head>
-        <body>
-            <h1 style="text-align:center; margin-bottom:0;">TJD COMPANY</h1>
-            <div style="text-align:center; font-size: 0.9rem; margin-bottom: 10px;">${rutaAdmin}</div>
-            <h2 style="text-align:center; margin-top:5px;">PRAVAC: ${izabraniSmjer === 'A' ? 'A (Odlazak)' : 'B (Povratak)'} - ${datumRute}</h2>
-            <hr>
-    `;
-
-    gradoviZaIspis.forEach(grad => {
-        const gradL = grad.toLowerCase().trim();
-        
-        function pripadaSmjeru(stavka) {
-            let gradOd = (stavka.posgrad || "").toLowerCase().trim();
-            let gradDo = (stavka.prigrad || "").toLowerCase().trim();
-            let idxOd = gradoviOriginal.map(g => g.toLowerCase().trim()).indexOf(gradOd);
-            let idxDo = gradoviOriginal.map(g => g.toLowerCase().trim()).indexOf(gradDo);
-            if (idxOd === -1 || idxDo === -1) return false;
-            let jeSmjerA = idxOd < idxDo;
-            return (izabraniSmjer === 'A' && jeSmjerA) || (izabraniSmjer === 'B' && !jeSmjerA);
-        }
-
-        const utovari = sviPodaci.filter(z => 
-            (z.status || "").toUpperCase().trim() === "PRIHVAĆENO" && 
-            (z.posgrad || "").toLowerCase().trim() === gradL &&
-            pripadaSmjeru(z)
-        );
-
-        const istovari = sviPodaci.filter(z => 
-            (z.status || "").toUpperCase().trim() === "PRIHVAĆENO" && 
-            (z.prigrad || "").toLowerCase().trim() === gradL &&
-            pripadaSmjeru(z)
-        );
-
-        if (utovari.length > 0 || istovari.length > 0) {
-            html += `<div class="grad-blok"><div class="grad-naslov">📍 ${grad.toUpperCase()}</div>`;
-            
-            if (utovari.length > 0) {
-                html += `<div class="sekcija"><div class="utovar">⬆️ UTOVARI:</div>`;
-                utovari.forEach(u => {
-                    let naplata = "";
-                    if ((u.koplaca || "").toLowerCase().includes("pošiljalac")) {
-                        naplata = `<div class="naplata-box"><strong>NAPLATI: ${u.cijena}€</strong><br><small>[&nbsp;&nbsp;&nbsp;] PLAĆENO</small></div>`;
-                    }
-                    html += `<div class="stavka">
-                        <div><strong>[&nbsp;&nbsp;&nbsp;] TL #${u.id}</strong> | 📦 ${u.posime}<br>
-                        <span class="info">📞 ${u.postel} | ${u.posadresa}<br>Sadržaj: ${u.opis} | 🏁 Za: ${u.prigrad}</span></div>
-                        ${naplata}
-                    </div>`;
-                });
-                html += `</div>`;
-            }
-
-            if (istovari.length > 0) {
-                html += `<div class="sekcija"><div class="istovar">⬇️ ISTOVARI:</div>`;
-                istovari.forEach(i => {
-                    let naplata = "";
-                    if ((i.koplaca || "").toLowerCase().includes("primalac")) {
-                        naplata = `<div class="naplata-box"><strong>NAPLATI: ${i.cijena}€</strong><br><small>[&nbsp;&nbsp;&nbsp;] PLAĆENO</small></div>`;
-                    }
-                    html += `<div class="stavka">
-                        <div><strong>[&nbsp;&nbsp;&nbsp;] TL #${i.id}</strong> | ✅ ZA: ${i.priime}<br>
-                        <span class="info">📞 ${i.pritel} | ${i.priadresa}<br>Sadržaj: ${i.opis} | 🚚 Iz: ${i.posgrad}</span></div>
-                        ${naplata}
-                    </div>`;
-                });
-                html += `</div>`;
-            }
-            html += `</div>`;
-        }
-    });
-
-    html += `<div class="no-print" style="text-align:center;"><button onclick="window.print()">ŠTAMPAJ IZVJEŠTAJ</button></div></body></html>`;
-
-    const win = window.open('', '_blank');
-    if(win) {
-        win.document.write(html);
-        win.document.close();
-    } else {
-        alert("Dozvolite pop-up prozor za štampu.");
-    }
-}
-  
-async function pokreniRutiranje() {
-    const startniGradElement = document.getElementById('mapaStartniGrad');
-    const startniGrad = startniGradElement.value.trim();
-    const izabraniTip = document.getElementById('mapaSmjer').value; 
-    const datumRuteIzPanela = (localStorage.getItem('tjd_zbirni_datum') || "").trim();
-    const sviGradoviCheck = document.getElementById('sviGradoviCheck') ? document.getElementById('sviGradoviCheck').checked : false;
-    
-    const tipPrevoza = "ZBIRNI"; 
-    
-    try {
-        const res = await fetch(scriptURL + "?tip=" + tipPrevoza);
-        const podaci = await res.json();
-
-        const normalizujDatum = (str) => {
-            if (!str) return "";
-            let s = str.toString().trim();
-            if (s.includes("T") || s.includes("-")) {
-                let d = new Date(s);
-                if (!isNaN(d)) {
-                    d.setHours(d.getHours() + 5);
-                    return d.getDate().toString().padStart(2, '0') + 
-                           (d.getMonth() + 1).toString().padStart(2, '0') + 
-                           d.getFullYear().toString();
-                }
-            }
-            return s.replace(/\D/g, ''); 
-        };
-
-        const cistPanelDatum = normalizujDatum(datumRuteIzPanela);
-        const rutaAdmin = localStorage.getItem('tjd_zbirni_naziv_rute') || "";
-        
-        // Redoslijed gradova iz Admina
-        let gradoviOriginal = rutaAdmin.split(',').map(g => g.trim().toLowerCase());
-        
-        // Ako je smjer B, moramo okrenuti listu gradova da bi sortiranje radilo ispravno
-        let gradoviZaSort = [...gradoviOriginal];
-        if (izabraniTip === 'B') {
-            gradoviZaSort.reverse();
-        }
-
-        let privremeniNiz = []; 
-        let mojIzabraniGrad = startniGrad.toLowerCase();
-
-        podaci.forEach(z => {
-            const status = (z.status || "").toString().toUpperCase().trim();
-            const cistDatumTabele = normalizujDatum(z.planiranidatum || "");
-            
-            if (status === "PRIHVAĆENO" && cistDatumTabele === cistPanelDatum) {
-                let gradOd = (z.posgrad || "").toString().toLowerCase().trim();
-                let gradDo = (z.prigrad || "").toString().toLowerCase().trim();
-                
-                let idxOd = gradoviOriginal.indexOf(gradOd);
-                let idxDo = gradoviOriginal.indexOf(gradDo);
-                
-                if (idxOd !== -1 && idxDo !== -1) {
-                    let smjerNaloga = (idxOd < idxDo) ? 'A' : 'B';
-                    let rutaOdgovara = (izabraniTip === 'ABA') || (izabraniTip === smjerNaloga);
-
-                    if (rutaOdgovara) {
-                        // Provjera za UTOVAR
-                        if (sviGradoviCheck || gradOd === mojIzabraniGrad) {
-                            privremeniNiz.push({
-                                adresa: `(UT ${z.id}) ${z.posadresa.trim()}, ${z.posgrad.trim()}`,
-                                grad: gradOd,
-                                index: gradoviZaSort.indexOf(gradOd)
-                            });
-                        }
-                        // Provjera za ISTOVAR
-                        if (sviGradoviCheck || gradDo === mojIzabraniGrad) {
-                            privremeniNiz.push({
-                                adresa: `(IS ${z.id}) ${z.priadresa.trim()}, ${z.prigrad.trim()}`,
-                                grad: gradDo,
-                                index: gradoviZaSort.indexOf(gradDo)
-                            });
-                        }
-                    }
-                }
-            }
-        });
-
-        // SORTIRANJE: Ređamo adrese prema redoslijedu gradova u ruti
-        privremeniNiz.sort((a, b) => a.index - b.index);
-
-        // Uzimamo samo čiste adrese nakon sortiranja
-        let adreseZaMapu = privremeniNiz.map(item => item.adresa);
-        let jedinstveneAdrese = [...new Set(adreseZaMapu)].filter(a => a.length > 5);
-
-        if (jedinstveneAdrese.length === 0) {
-            alert("Nema naloga za izabrane kriterijume.");
-            return;
-        }
-
-        let origin = "Current+Location";
-        let destination = "";
-        let waypointsStr = "";
-
-        if (izabraniTip === 'ABA') {
-            let povratniGrad = (sviGradoviCheck) ? gradoviOriginal[0] : startniGrad;
-            destination = encodeURIComponent(povratniGrad);
-            waypointsStr = jedinstveneAdrese.map(a => encodeURIComponent(a)).join('|');
-        } else {
-            let lastIdx = jedinstveneAdrese.length - 1;
-            destination = encodeURIComponent(jedinstveneAdrese[lastIdx]);
-            if (jedinstveneAdrese.length > 1) {
-                waypointsStr = jedinstveneAdrese.slice(0, lastIdx).map(a => encodeURIComponent(a)).join('|');
-            }
-        }
-
-        const finalniUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypointsStr}&travelmode=driving`;
-        window.open(finalniUrl, '_blank');
-
-    } catch (error) {
-        console.error("Greška:", error);
-    }
-}
 </script>
 </body>
 </html>
